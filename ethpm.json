@@ -1,0 +1,17 @@
+{
+  "package_name": "erc20-crowdsale",
+  "version": "1.0.0",
+  "description": "Smart Contracts for an ERC20 Token Crowdsale",
+  "authors": [
+    "Vittorio Minacori (@vittominacori)"
+  ],
+  "keywords": [
+    "solidity",
+    "ethereum",
+    "smart",
+    "contracts",
+    "token",
+    "erc20"
+  ],
+  "license": "MIT"
+}

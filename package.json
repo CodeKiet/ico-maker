@@ -1,0 +1,70 @@
+{
+  "name": "erc20-crowdsale",
+  "version": "1.0.0",
+  "description": "Smart Contracts for an ERC20 Token Crowdsale",
+  "main": "truffle-config.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "dev": "lite-server",
+    "test": "scripts/test.sh",
+    "lint": "eslint migrations test",
+    "lint:fix": "eslint migrations test --fix",
+    "lint:sol": "solium -d contracts",
+    "lint:sol:fix": "solium -d contracts --fix",
+    "lint:all": "npm run lint && npm run lint:sol",
+    "lint:all:fix": "npm run lint:fix && npm run lint:sol:fix",
+    "console": "truffle console",
+    "coverage": "scripts/coverage.sh",
+    "version": "scripts/version.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vittominacori/erc20-crowdsale.git"
+  },
+  "homepage": "https://github.com/vittominacori/erc20-crowdsale/",
+  "bugs": {
+    "url": "https://github.com/vittominacori/erc20-crowdsale/issues"
+  },
+  "author": "Vittorio Minacori",
+  "contributors": [
+    {
+      "name": "Vittorio Minacori",
+      "url": "https://github.com/vittominacori"
+    }
+  ],
+  "license": "MIT",
+  "devDependencies": {
+    "ajv": "^6.5.1",
+    "babel-polyfill": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
+    "babel-register": "^6.26.0",
+    "chai": "^4.1.2",
+    "chai-as-promised": "^7.1.1",
+    "chai-bignumber": "^2.0.2",
+    "coveralls": "^3.0.1",
+    "dotenv": "^6.0.0",
+    "eslint": "^4.19.1",
+    "eslint-config-standard": "^12.0.0-alpha.0",
+    "eslint-plugin-import": "^2.12.0",
+    "eslint-plugin-node": "^6.0.1",
+    "eslint-plugin-promise": "^3.7.0",
+    "eslint-plugin-standard": "^3.1.0",
+    "ethereumjs-util": "^5.1.5",
+    "ethereumjs-wallet": "^0.6.0",
+    "ethjs-abi": "^0.2.1",
+    "ganache-cli": "^6.1.0",
+    "lite-server": "^2.3.0",
+    "openzeppelin-solidity": "1.10.0",
+    "solidity-coverage": "^0.5.4",
+    "solium": "^1.1.8",
+    "truffle": "^4.1.13",
+    "truffle-contract": "^3.0.4",
+    "truffle-hdwallet-provider": "0.0.3",
+    "truffle-wallet-provider": "0.0.5",
+    "webpack": "^4.12.0",
+    "yargs": "^11.0.0"
+  },
+  "dependencies": {}
+}
