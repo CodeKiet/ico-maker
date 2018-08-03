@@ -20,7 +20,13 @@ contract Contributions is RBAC, Ownable {
 
   constructor() public {}
 
-  function addBalance(address _address, uint256 _tokenAmount) public onlyMinter {
+  function addBalance(
+    address _address,
+    uint256 _tokenAmount
+  )
+    public
+    onlyMinter
+  {
     if (tokenBalances[_address] == 0) {
       addresses.push(_address);
     }
