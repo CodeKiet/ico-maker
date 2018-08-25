@@ -16,17 +16,17 @@ contract ERC20Token is DetailedERC20, RBACMintableToken, BurnableToken {
   }
 
   constructor(string _name, string _symbol, uint8 _decimals)
-    DetailedERC20(_name, _symbol, _decimals)
-    public
+  DetailedERC20(_name, _symbol, _decimals)
+  public
   {}
 
   function transfer(
     address _to,
     uint256 _value
   )
-    public
-    canTransfer
-    returns (bool)
+  public
+  canTransfer
+  returns (bool)
   {
     return super.transfer(_to, _value);
   }
@@ -36,9 +36,9 @@ contract ERC20Token is DetailedERC20, RBACMintableToken, BurnableToken {
     address _to,
     uint256 _value
   )
-    public
-    canTransfer
-    returns (bool)
+  public
+  canTransfer
+  returns (bool)
   {
     return super.transferFrom(_from, _to, _value);
   }
@@ -47,9 +47,9 @@ contract ERC20Token is DetailedERC20, RBACMintableToken, BurnableToken {
     address _tokenAddress,
     uint256 _tokens
   )
-    public
-    onlyOwner
-    returns (bool success)
+  public
+  onlyOwner
+  returns (bool success)
   {
     return ERC20Basic(_tokenAddress).transfer(owner, _tokens);
   }

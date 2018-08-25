@@ -68,9 +68,9 @@ contract CappedBountyMinter is Ownable {
     address _tokenAddress,
     uint256 _tokens
   )
-    public
-    onlyOwner
-    returns (bool success)
+  public
+  onlyOwner
+  returns (bool success)
   {
     return ERC20Basic(_tokenAddress).transfer(owner, _tokens);
   }

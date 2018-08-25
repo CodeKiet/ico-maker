@@ -7,7 +7,7 @@ import "openzeppelin-solidity/contracts/crowdsale/validation/CappedCrowdsale.sol
 // solium-disable-next-line max-len
 import "openzeppelin-solidity/contracts/crowdsale/emission/MintedCrowdsale.sol";
 
-import "./utils/Contributions.sol";
+import "../utils/Contributions.sol";
 
 
 // solium-disable-next-line max-len
@@ -68,9 +68,9 @@ contract DefaultCrowdsale is TimedCrowdsale, CappedCrowdsale, MintedCrowdsale, O
     address _beneficiary,
     uint256 _tokenAmount
   )
-    internal
+  internal
   {
-    super._deliverTokens(_beneficiary, _tokenAmount);
+    super._processPurchase(_beneficiary, _tokenAmount);
     contributions.addBalance(_beneficiary, _tokenAmount);
   }
 }

@@ -24,8 +24,8 @@ contract Contributions is RBAC, Ownable {
     address _address,
     uint256 _tokenAmount
   )
-    public
-    onlyMinter
+  public
+  onlyMinter
   {
     if (tokenBalances[_address] == 0) {
       addresses.push(_address);

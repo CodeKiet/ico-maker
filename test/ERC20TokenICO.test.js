@@ -1,10 +1,10 @@
-import { advanceBlock } from './helpers/advanceToBlock';
-import { duration } from './helpers/increaseTime';
-import latestTime from './helpers/latestTime';
-import ether from './helpers/ether';
-import assertRevert from './helpers/assertRevert';
+const { advanceBlock } = require('./helpers/advanceToBlock');
+const { duration } = require('./helpers/increaseTime');
+const { latestTime } = require('./helpers/latestTime');
+const { ether } = require('./helpers/ether');
+const { assertRevert } = require('./helpers/assertRevert');
 
-import shouldBehaveDefaultCrowdsale from './behaviours/DefaultCrowdsale.behaviour';
+const { shouldBehaveDefaultCrowdsale } = require('./behaviours/DefaultCrowdsale.behaviour');
 
 const BigNumber = web3.BigNumber;
 
@@ -34,7 +34,7 @@ contract('ERC20TokenICO', function ([owner, investor, wallet, purchaser, thirdPa
   });
 
   beforeEach(async function () {
-    this.openingTime = latestTime() + duration.weeks(1);
+    this.openingTime = (await latestTime()) + duration.weeks(1);
     this.closingTime = this.openingTime + duration.weeks(1);
     this.afterClosingTime = this.closingTime + duration.seconds(1);
 
@@ -115,7 +115,7 @@ contract('ERC20TokenICO', function ([owner, investor, wallet, purchaser, thirdPa
       it('should fail if opening time is in the past', async function () {
         await assertRevert(
           ERC20TokenICO.new(
-            latestTime() - duration.seconds(1),
+            (await latestTime()) - duration.seconds(1),
             this.closingTime,
             rate,
             wallet,

@@ -1,6 +1,6 @@
 pragma solidity ^0.4.24;
 
-import "./DefaultCrowdsale.sol";
+import "./base/DefaultCrowdsale.sol";
 
 
 contract ERC20TokenICO is DefaultCrowdsale {

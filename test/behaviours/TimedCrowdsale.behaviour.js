@@ -1,5 +1,5 @@
-import { increaseTimeTo } from '../helpers/increaseTime';
-import assertRevert from '../helpers/assertRevert';
+const { increaseTimeTo } = require('../helpers/increaseTime');
+const { assertRevert } = require('../helpers/assertRevert');
 
 const BigNumber = web3.BigNumber;
 
@@ -8,7 +8,7 @@ require('chai')
   .use(require('chai-bignumber')(BigNumber))
   .should();
 
-export default function ([owner, investor, wallet, purchaser], rate, value) {
+function shouldBehaveLikeTimedCrowdsale ([owner, investor, wallet, purchaser], rate, value) {
   it('should be ended only after end', async function () {
     let ended = await this.crowdsale.hasClosed();
     ended.should.equal(false);
@@ -36,3 +36,7 @@ export default function ([owner, investor, wallet, purchaser], rate, value) {
     });
   });
 }
+
+module.exports = {
+  shouldBehaveLikeTimedCrowdsale,
+};

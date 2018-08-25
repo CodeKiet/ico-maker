@@ -1,18 +1,12 @@
-require('babel-register');
-require('babel-polyfill');
+require('dotenv').config();
 
 module.exports = {
   networks: {
     develop: {
-      host: 'localhost',
+      host: "127.0.0.1",
       port: 9545,
-      network_id: '*', // Match any network id
-      gas: 6000000, // Gas limit used for deploys
-    },
-    ganache: {
-      host: 'localhost',
-      port: 8545,
-      network_id: '*', // eslint-disable-line camelcase
+      network_id: "*", // Match any network id
+      gas: 6000000 // Gas limit used for deploys
     },
     coverage: {
       host: 'localhost',
@@ -21,11 +15,16 @@ module.exports = {
       gas: 0xfffffffffff,
       gasPrice: 0x01,
     },
+    ganache: {
+      host: 'localhost',
+      port: 8545,
+      network_id: '*', // eslint-disable-line camelcase
+    },
   },
   solc: {
     optimizer: {
       enabled: true,
-      runs: 200,
-    },
-  },
+      runs: 200
+    }
+  }
 };

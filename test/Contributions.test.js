@@ -1,5 +1,5 @@
-import assertRevert from './helpers/assertRevert';
-import expectEvent from './helpers/expectEvent';
+const { assertRevert } = require('./helpers/assertRevert');
+const expectEvent = require('./helpers/expectEvent');
 
 const BigNumber = web3.BigNumber;
 
@@ -69,16 +69,16 @@ contract('Contributions', function ([_, owner, minter, futureMinter, thirdParty,
       await this.contributions.addBalance(anotherThirdParty, valueToAdd, { from: minter });
       await this.contributions.addBalance(anotherThirdParty, valueToAdd, { from: minter });
 
-      let balances = [];
+      const balances = [];
       balances[owner] = await this.contributions.tokenBalances(owner);
       balances[thirdParty] = await this.contributions.tokenBalances(thirdParty);
       balances[anotherThirdParty] = await this.contributions.tokenBalances(anotherThirdParty);
 
-      let contributorsLength = (await this.contributions.getContributorsLength()).valueOf();
+      const contributorsLength = (await this.contributions.getContributorsLength()).valueOf();
 
       for (let i = 0; i < contributorsLength; i++) {
-        let address = await this.contributions.addresses(i);
-        let balance = await this.contributions.tokenBalances(address);
+        const address = await this.contributions.addresses(i);
+        const balance = await this.contributions.tokenBalances(address);
 
         balance.should.be.bignumber.equal(balances[address]);
       }

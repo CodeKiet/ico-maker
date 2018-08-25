@@ -5,7 +5,7 @@ const should = require('chai')
   .use(require('chai-bignumber')(BigNumber))
   .should();
 
-export default function ([owner, investor, wallet, purchaser], rate, value) {
+function shouldBehaveLikeMintedCrowdsale ([owner, investor, wallet, purchaser], rate, value) {
   const expectedTokenAmount = rate.mul(value);
 
   describe('accepting payments', function () {
@@ -28,7 +28,7 @@ export default function ([owner, investor, wallet, purchaser], rate, value) {
 
     it('should assign tokens to sender', async function () {
       await this.crowdsale.sendTransaction({ value: value, from: investor });
-      let balance = await this.token.balanceOf(investor);
+      const balance = await this.token.balanceOf(investor);
       balance.should.be.bignumber.equal(expectedTokenAmount);
     });
 
@@ -65,3 +65,7 @@ export default function ([owner, investor, wallet, purchaser], rate, value) {
     });
   });
 }
+
+module.exports = {
+  shouldBehaveLikeMintedCrowdsale,
+};

@@ -1,10 +1,10 @@
-import ether from '../helpers/ether';
-import { increaseTimeTo } from '../helpers/increaseTime';
-import assertRevert from '../helpers/assertRevert';
+const { ether } = require('../helpers/ether');
+const { increaseTimeTo } = require('../helpers/increaseTime');
+const { assertRevert } = require('../helpers/assertRevert');
 
-import shouldBehaveLikeTimedCrowdsale from './TimedCrowdsale.behaviour';
-import shouldBehaveLikeCappedCrowdsale from './CappedCrowdsale.behaviour';
-import shouldBehaveLikeMintedCrowdsale from './MintedCrowdsale.behaviour';
+const { shouldBehaveLikeMintedCrowdsale } = require('./MintedCrowdsale.behaviour');
+const { shouldBehaveLikeTimedCrowdsale } = require('./TimedCrowdsale.behaviour');
+const { shouldBehaveLikeCappedCrowdsale } = require('./CappedCrowdsale.behaviour');
 
 const BigNumber = web3.BigNumber;
 
@@ -15,7 +15,7 @@ require('chai')
 
 const MintableToken = artifacts.require('MintableToken');
 
-export default function ([owner, investor, wallet, purchaser, thirdParty], rate) {
+function shouldBehaveDefaultCrowdsale ([owner, investor, wallet, purchaser, thirdParty], rate) {
   const value = ether(0.1);
 
   context('like a TimedCrowdsale', function () {
@@ -160,7 +160,7 @@ export default function ([owner, investor, wallet, purchaser, thirdParty], rate)
   context('safe functions', function () {
     describe('transferAnyERC20Token', function () {
       let anotherERC20;
-      let tokenAmount = new BigNumber(1000);
+      const tokenAmount = new BigNumber(1000);
 
       beforeEach(async function () {
         anotherERC20 = await MintableToken.new({ from: owner });
@@ -193,3 +193,7 @@ export default function ([owner, investor, wallet, purchaser, thirdParty], rate)
     });
   });
 }
+
+module.exports = {
+  shouldBehaveDefaultCrowdsale,
+};
