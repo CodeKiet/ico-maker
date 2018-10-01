@@ -1,4 +1,4 @@
-const { assertRevert } = require('../helpers/assertRevert');
+const { assertRevert } = require('../../helpers/assertRevert');
 
 const BigNumber = web3.BigNumber;
 
@@ -13,7 +13,7 @@ function shouldBehaveLikeCappedCrowdsale ([investor, purchaser]) {
 
   beforeEach(async function () {
     cap = await this.crowdsale.cap();
-    lessThanCap = cap.minus(1);
+    lessThanCap = cap.div(2);
   });
 
   describe('accepting payments', function () {

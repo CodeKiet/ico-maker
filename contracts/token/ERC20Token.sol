@@ -4,8 +4,11 @@ import "openzeppelin-solidity/contracts/token/ERC20/DetailedERC20.sol";
 import "openzeppelin-solidity/contracts/token/ERC20/RBACMintableToken.sol";
 import "openzeppelin-solidity/contracts/token/ERC20/BurnableToken.sol";
 
+import "../safe/TokenRecover.sol";
 
-contract ERC20Token is DetailedERC20, RBACMintableToken, BurnableToken {
+
+// solium-disable-next-line max-len
+contract ERC20Token is DetailedERC20, RBACMintableToken, BurnableToken, TokenRecover {
 
   modifier canTransfer() {
     require(
@@ -41,16 +44,5 @@ contract ERC20Token is DetailedERC20, RBACMintableToken, BurnableToken {
   returns (bool)
   {
     return super.transferFrom(_from, _to, _value);
-  }
-
-  function transferAnyERC20Token(
-    address _tokenAddress,
-    uint256 _tokens
-  )
-  public
-  onlyOwner
-  returns (bool success)
-  {
-    return ERC20Basic(_tokenAddress).transfer(owner, _tokens);
   }
 }

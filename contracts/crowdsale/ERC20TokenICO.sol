@@ -11,6 +11,7 @@ contract ERC20TokenICO is DefaultCrowdsale {
     uint256 _rate,
     address _wallet,
     uint256 _cap,
+    uint256 _minimumContribution,
     address _token,
     address _contributions
   )
@@ -20,6 +21,7 @@ contract ERC20TokenICO is DefaultCrowdsale {
     _rate,
     _wallet,
     _cap,
+    _minimumContribution,
     _token,
     _contributions
   )

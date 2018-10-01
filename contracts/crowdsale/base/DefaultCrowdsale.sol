@@ -8,12 +8,15 @@ import "openzeppelin-solidity/contracts/crowdsale/validation/CappedCrowdsale.sol
 import "openzeppelin-solidity/contracts/crowdsale/emission/MintedCrowdsale.sol";
 
 import "../utils/Contributions.sol";
+import "../../safe/TokenRecover.sol";
 
 
 // solium-disable-next-line max-len
-contract DefaultCrowdsale is TimedCrowdsale, CappedCrowdsale, MintedCrowdsale, Ownable {
+contract DefaultCrowdsale is TimedCrowdsale, CappedCrowdsale, MintedCrowdsale, Ownable, TokenRecover {
 
   Contributions public contributions;
+
+  uint256 public minimumContribution;
 
   constructor(
     uint256 _startTime,
@@ -21,6 +24,7 @@ contract DefaultCrowdsale is TimedCrowdsale, CappedCrowdsale, MintedCrowdsale, O
     uint256 _rate,
     address _wallet,
     uint256 _cap,
+    uint256 _minimumContribution,
     address _token,
     address _contributions
   )
@@ -34,6 +38,7 @@ contract DefaultCrowdsale is TimedCrowdsale, CappedCrowdsale, MintedCrowdsale, O
       "Contributions address can't be the zero address."
     );
     contributions = Contributions(_contributions);
+    minimumContribution = _minimumContribution;
   }
 
   // false if the ico is not started, true if the ico is started and running, true if the ico is completed
@@ -47,15 +52,22 @@ contract DefaultCrowdsale is TimedCrowdsale, CappedCrowdsale, MintedCrowdsale, O
     return hasClosed() || capReached();
   }
 
-  function transferAnyERC20Token(
-    address _tokenAddress,
-    uint256 _tokens
+  /**
+   * @dev Extend parent behavior requiring purchase to respect the minimumContribution.
+   * @param _beneficiary Token purchaser
+   * @param _weiAmount Amount of wei contributed
+   */
+  function _preValidatePurchase(
+    address _beneficiary,
+    uint256 _weiAmount
   )
-  public
-  onlyOwner
-  returns (bool success)
+  internal
   {
-    return ERC20Basic(_tokenAddress).transfer(owner, _tokens);
+    require(
+      _weiAmount >= minimumContribution,
+      "Can't send less than the minimum contribution"
+    );
+    super._preValidatePurchase(_beneficiary, _weiAmount);
   }
 
   /**

@@ -1,4 +1,6 @@
-const { assertRevert } = require('./helpers/assertRevert');
+const { assertRevert } = require('../helpers/assertRevert');
+
+const { shouldBehaveLikeTokenRecover } = require('../safe/TokenRecover.behaviour');
 
 const BigNumber = web3.BigNumber;
 
@@ -9,7 +11,6 @@ require('chai')
 
 const CappedBountyMinter = artifacts.require('CappedBountyMinter');
 const ERC20Token = artifacts.require('ERC20Token');
-const MintableToken = artifacts.require('MintableToken');
 
 const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
 
@@ -225,41 +226,22 @@ contract('CappedBountyMinter', function (
         );
       });
     });
-  });
 
-  context('safe functions', function () {
-    describe('transferAnyERC20Token', function () {
-      let anotherERC20;
-      const tokenAmount = new BigNumber(1000);
-
-      beforeEach(async function () {
-        anotherERC20 = await MintableToken.new({ from: tokenOwner });
-        await anotherERC20.mint(this.bounty.address, tokenAmount, { from: tokenOwner });
-      });
-
-      describe('if owner is calling', function () {
-        it('should safe transfer any ERC20 sent for error into the contract', async function () {
-          const contractPre = await anotherERC20.balanceOf(this.bounty.address);
-          contractPre.should.be.bignumber.equal(tokenAmount);
-          const ownerPre = await anotherERC20.balanceOf(tokenOwner);
-          ownerPre.should.be.bignumber.equal(0);
-
-          await this.bounty.transferAnyERC20Token(anotherERC20.address, tokenAmount, { from: bountyOwner });
-
-          const contractPost = await anotherERC20.balanceOf(this.bounty.address);
-          contractPost.should.be.bignumber.equal(0);
-          const ownerPost = await anotherERC20.balanceOf(bountyOwner);
-          ownerPost.should.be.bignumber.equal(tokenAmount);
-        });
-      });
-
-      describe('if third party is calling', function () {
-        it('reverts', async function () {
-          await assertRevert(
-            this.bounty.transferAnyERC20Token(anotherERC20.address, tokenAmount, { from: thirdParty })
-          );
-        });
+    describe('if minting is finished', function () {
+      it('reverts', async function () {
+        await this.token.finishMinting({ from: tokenOwner });
+        await assertRevert(
+          this.bounty.multiSend(addresses, amounts, { from: bountyOwner })
+        );
       });
     });
+  });
+
+  context('like a TokenRecover', function () {
+    beforeEach(async function () {
+      this.instance = this.bounty;
+    });
+
+    shouldBehaveLikeTokenRecover([bountyOwner, thirdParty]);
   });
 });

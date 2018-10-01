@@ -15,6 +15,7 @@ contract Contributions is RBAC, Ownable {
     _;
   }
 
+  uint256 public totalSoldTokens;
   mapping(address => uint256) public tokenBalances;
   address[] public addresses;
 
@@ -31,6 +32,7 @@ contract Contributions is RBAC, Ownable {
       addresses.push(_address);
     }
     tokenBalances[_address] = tokenBalances[_address].add(_tokenAmount);
+    totalSoldTokens = totalSoldTokens.add(_tokenAmount);
   }
 
   /**

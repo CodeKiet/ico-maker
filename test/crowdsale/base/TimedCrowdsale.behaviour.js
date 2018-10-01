@@ -1,5 +1,5 @@
-const { increaseTimeTo } = require('../helpers/increaseTime');
-const { assertRevert } = require('../helpers/assertRevert');
+const { increaseTimeTo } = require('../../helpers/increaseTime');
+const { assertRevert } = require('../../helpers/assertRevert');
 
 const BigNumber = web3.BigNumber;
 

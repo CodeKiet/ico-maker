@@ -1,10 +1,10 @@
-const { ether } = require('../helpers/ether');
-const { increaseTimeTo } = require('../helpers/increaseTime');
-const { assertRevert } = require('../helpers/assertRevert');
+const { increaseTimeTo } = require('../../helpers/increaseTime');
+const { assertRevert } = require('../../helpers/assertRevert');
 
 const { shouldBehaveLikeMintedCrowdsale } = require('./MintedCrowdsale.behaviour');
 const { shouldBehaveLikeTimedCrowdsale } = require('./TimedCrowdsale.behaviour');
 const { shouldBehaveLikeCappedCrowdsale } = require('./CappedCrowdsale.behaviour');
+const { shouldBehaveLikeTokenRecover } = require('../../safe/TokenRecover.behaviour');
 
 const BigNumber = web3.BigNumber;
 
@@ -13,10 +13,8 @@ require('chai')
   .use(require('chai-bignumber')(BigNumber))
   .should();
 
-const MintableToken = artifacts.require('MintableToken');
-
-function shouldBehaveDefaultCrowdsale ([owner, investor, wallet, purchaser, thirdParty], rate) {
-  const value = ether(0.1);
+function shouldBehaveDefaultCrowdsale ([owner, investor, wallet, purchaser, thirdParty], rate, minimumContribution) {
+  const value = minimumContribution;
 
   context('like a TimedCrowdsale', function () {
     shouldBehaveLikeTimedCrowdsale([owner, investor, wallet, purchaser], rate, value);
@@ -57,6 +55,12 @@ function shouldBehaveDefaultCrowdsale ([owner, investor, wallet, purchaser, thir
         contributorsLength = await this.contributions.getContributorsLength();
         assert.equal(contributorsLength, 1);
       });
+
+      it('should fail if less than minimum contribution', async function () {
+        await assertRevert(
+          this.crowdsale.sendTransaction({ value: minimumContribution.sub(1), from: investor })
+        );
+      });
     });
 
     describe('low-level purchase', function () {
@@ -78,6 +82,12 @@ function shouldBehaveDefaultCrowdsale ([owner, investor, wallet, purchaser, thir
 
         contributorsLength = await this.contributions.getContributorsLength();
         assert.equal(contributorsLength, 1);
+      });
+
+      it('should fail if less than minimum contribution', async function () {
+        await assertRevert(
+          this.crowdsale.buyTokens(investor, { value: minimumContribution.sub(1), from: purchaser })
+        );
       });
     });
 
@@ -157,40 +167,12 @@ function shouldBehaveDefaultCrowdsale ([owner, investor, wallet, purchaser, thir
     });
   });
 
-  context('safe functions', function () {
-    describe('transferAnyERC20Token', function () {
-      let anotherERC20;
-      const tokenAmount = new BigNumber(1000);
-
-      beforeEach(async function () {
-        anotherERC20 = await MintableToken.new({ from: owner });
-        await anotherERC20.mint(this.crowdsale.address, tokenAmount, { from: owner });
-      });
-
-      describe('if owner is calling', function () {
-        it('should safe transfer any ERC20 sent for error into the contract', async function () {
-          const contractPre = await anotherERC20.balanceOf(this.crowdsale.address);
-          contractPre.should.be.bignumber.equal(tokenAmount);
-          const ownerPre = await anotherERC20.balanceOf(owner);
-          ownerPre.should.be.bignumber.equal(0);
-
-          await this.crowdsale.transferAnyERC20Token(anotherERC20.address, tokenAmount, { from: owner });
-
-          const contractPost = await anotherERC20.balanceOf(this.crowdsale.address);
-          contractPost.should.be.bignumber.equal(0);
-          const ownerPost = await anotherERC20.balanceOf(owner);
-          ownerPost.should.be.bignumber.equal(tokenAmount);
-        });
-      });
-
-      describe('if third party is calling', function () {
-        it('reverts', async function () {
-          await assertRevert(
-            this.crowdsale.transferAnyERC20Token(anotherERC20.address, tokenAmount, { from: thirdParty })
-          );
-        });
-      });
+  context('like a TokenRecover', function () {
+    beforeEach(async function () {
+      this.instance = this.crowdsale;
     });
+
+    shouldBehaveLikeTokenRecover([owner, thirdParty]);
   });
 }
 

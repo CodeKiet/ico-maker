@@ -3,7 +3,7 @@ pragma solidity ^0.4.24;
 import "../token/ERC20Token.sol";
 
 
-contract CappedBountyMinter is Ownable {
+contract CappedBountyMinter is Ownable, TokenRecover {
   using SafeMath for uint256;
 
   ERC20Token public token;
@@ -62,16 +62,5 @@ contract CappedBountyMinter is Ownable {
 
   function remainingTokens() public view returns(uint256) {
     return cap.sub(totalGivenBountyTokens);
-  }
-
-  function transferAnyERC20Token(
-    address _tokenAddress,
-    uint256 _tokens
-  )
-  public
-  onlyOwner
-  returns (bool success)
-  {
-    return ERC20Basic(_tokenAddress).transfer(owner, _tokens);
   }
 }

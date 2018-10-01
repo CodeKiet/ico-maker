@@ -5,33 +5,23 @@
 
 Smart Contracts for an ERC20 Token Crowdsale.
 
-
 Code created using [Open Zeppelin (openzeppelin-solidity)](https://github.com/OpenZeppelin/openzeppelin-solidity) and [Truffle Framework](https://github.com/trufflesuite/truffle).
 
-
- 
 ## Installation
-
 
 Install truffle.
 
 ```bash
-npm install -g truffle      // Version 4.1.13+ required.
+npm install -g truffle      // Version 4.1.14+ required.
 ```
 
-
-
 ## Install dependencies
-
 
 ```bash
 npm install
 ```
 
-
-
 ## Linter
-
 
 Use Solium
 
@@ -39,17 +29,22 @@ Use Solium
 npm run lint:sol
 ```
 
-Lint and fix all
+Use ESLint
 
 ```bash
-npm run lint:all:fix
+npm run lint:js
 ```
 
+#### Note
 
+IMPORTANT: Before commit run the lint and fix command:
+
+```bash
+npm run lint:fix
+```
 
 ## Compile and test the contracts.
  
-
 Open the Truffle console
 
 ```bash
@@ -68,35 +63,19 @@ Test
 test
 ```
 
-
-
 ## Optional
-
 
 Install the [truffle-flattener](https://github.com/alcuadrado/truffle-flattener)
 
 ```bash
 npm install -g truffle-flattener
 ```
- 
- 
+
 Usage 
 
 ```bash
 truffle-flattener contracts/ERC20Token.sol >> dist/ERC20Token.dist.sol
 ```
-
-
-
-## Note
-
-IMPORTANT: Before commit run the lint and fix command:
-
-```bash
-npm run lint:all:fix
-```
-
-
 
 ## Links
 
@@ -106,4 +85,4 @@ OpenZeppelin [Doc](http://zeppelin-solidity.readthedocs.io) [Github](https://git
 
 Truffle [Doc](http://truffleframework.com/docs) [Github](https://github.com/trufflesuite/truffle)
 
-Web3.js [Doc 0.20.4](https://github.com/ethereum/wiki/wiki/JavaScript-API) [Doc 1.0](http://web3js.readthedocs.io/en/1.0) [Github](https://github.com/ethereum/web3.js)
+Web3.js [Doc 0.20.6](https://github.com/ethereum/wiki/wiki/JavaScript-API) [Doc 1.0](http://web3js.readthedocs.io/en/1.0) [Github](https://github.com/ethereum/web3.js)

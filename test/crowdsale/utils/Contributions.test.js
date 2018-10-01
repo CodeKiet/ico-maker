@@ -1,5 +1,5 @@
-const { assertRevert } = require('./helpers/assertRevert');
-const expectEvent = require('./helpers/expectEvent');
+const { assertRevert } = require('../../helpers/assertRevert');
+const expectEvent = require('../../helpers/expectEvent');
 
 const BigNumber = web3.BigNumber;
 
@@ -31,6 +31,17 @@ contract('Contributions', function ([_, owner, minter, futureMinter, thirdParty,
 
       balance = await this.contributions.tokenBalances(thirdParty);
       balance.should.be.bignumber.equal(valueToAdd.mul(4));
+    });
+
+    it('should increase total sold tokens', async function () {
+      let totalSoldTokens = await this.contributions.totalSoldTokens();
+      totalSoldTokens.should.be.bignumber.equal(0);
+
+      await this.contributions.addBalance(thirdParty, valueToAdd, { from: minter });
+      await this.contributions.addBalance(thirdParty, valueToAdd.mul(3), { from: minter });
+
+      totalSoldTokens = await this.contributions.totalSoldTokens();
+      totalSoldTokens.should.be.bignumber.equal(valueToAdd.mul(4));
     });
 
     it('should increase array length when different address are passed', async function () {

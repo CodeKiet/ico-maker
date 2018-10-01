@@ -1,10 +1,10 @@
-const { advanceBlock } = require('./helpers/advanceToBlock');
-const { duration } = require('./helpers/increaseTime');
-const { latestTime } = require('./helpers/latestTime');
-const { ether } = require('./helpers/ether');
-const { assertRevert } = require('./helpers/assertRevert');
+const { advanceBlock } = require('../helpers/advanceToBlock');
+const { duration } = require('../helpers/increaseTime');
+const { latestTime } = require('../helpers/latestTime');
+const { ether } = require('../helpers/ether');
+const { assertRevert } = require('../helpers/assertRevert');
 
-const { shouldBehaveDefaultCrowdsale } = require('./behaviours/DefaultCrowdsale.behaviour');
+const { shouldBehaveDefaultCrowdsale } = require('./base/DefaultCrowdsale.behaviour');
 
 const BigNumber = web3.BigNumber;
 
@@ -27,6 +27,7 @@ contract('ERC20TokenICO', function ([owner, investor, wallet, purchaser, thirdPa
 
   const rate = new BigNumber(1000);
   const cap = ether(1);
+  const minimumContribution = ether(0.2);
 
   before(async function () {
     // Advance to the next block to correctly read time in the solidity "now" function interpreted by testrpc
@@ -46,6 +47,7 @@ contract('ERC20TokenICO', function ([owner, investor, wallet, purchaser, thirdPa
       rate,
       wallet,
       cap,
+      minimumContribution,
       this.token.address,
       this.contributions.address
     );
@@ -55,7 +57,7 @@ contract('ERC20TokenICO', function ([owner, investor, wallet, purchaser, thirdPa
   });
 
   context('like a DefaultCrowdsale', function () {
-    shouldBehaveDefaultCrowdsale([owner, investor, wallet, purchaser, thirdParty], rate);
+    shouldBehaveDefaultCrowdsale([owner, investor, wallet, purchaser, thirdParty], rate, minimumContribution);
   });
 
   context('like a ERC20TokenICO', function () {
@@ -78,6 +80,7 @@ contract('ERC20TokenICO', function ([owner, investor, wallet, purchaser, thirdPa
             0,
             wallet,
             cap,
+            minimumContribution,
             this.token.address,
             this.contributions.address
           )
@@ -92,6 +95,7 @@ contract('ERC20TokenICO', function ([owner, investor, wallet, purchaser, thirdPa
             rate,
             ZERO_ADDRESS,
             cap,
+            minimumContribution,
             this.token.address,
             this.contributions.address
           )
@@ -106,6 +110,7 @@ contract('ERC20TokenICO', function ([owner, investor, wallet, purchaser, thirdPa
             rate,
             wallet,
             cap,
+            minimumContribution,
             ZERO_ADDRESS,
             this.contributions.address
           )
@@ -120,6 +125,7 @@ contract('ERC20TokenICO', function ([owner, investor, wallet, purchaser, thirdPa
             rate,
             wallet,
             cap,
+            minimumContribution,
             this.token.address,
             this.contributions.address
           )
@@ -134,6 +140,7 @@ contract('ERC20TokenICO', function ([owner, investor, wallet, purchaser, thirdPa
             rate,
             wallet,
             cap,
+            minimumContribution,
             this.token.address,
             this.contributions.address
           )
@@ -148,6 +155,7 @@ contract('ERC20TokenICO', function ([owner, investor, wallet, purchaser, thirdPa
             rate,
             wallet,
             cap,
+            minimumContribution,
             this.token.address,
             ZERO_ADDRESS
           )
@@ -162,6 +170,7 @@ contract('ERC20TokenICO', function ([owner, investor, wallet, purchaser, thirdPa
             rate,
             wallet,
             0,
+            minimumContribution,
             this.token.address,
             this.contributions.address
           )
