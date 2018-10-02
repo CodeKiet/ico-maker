@@ -3,12 +3,13 @@ pragma solidity ^0.4.24;
 import "openzeppelin-solidity/contracts/token/ERC20/DetailedERC20.sol";
 import "openzeppelin-solidity/contracts/token/ERC20/RBACMintableToken.sol";
 import "openzeppelin-solidity/contracts/token/ERC20/BurnableToken.sol";
+import "erc-payable-token/contracts/token/ERC1363/ERC1363BasicToken.sol";
 
 import "../safe/TokenRecover.sol";
 
 
 // solium-disable-next-line max-len
-contract ERC20Token is DetailedERC20, RBACMintableToken, BurnableToken, TokenRecover {
+contract ERC20Token is DetailedERC20, RBACMintableToken, BurnableToken, ERC1363BasicToken, TokenRecover {
 
   modifier canTransfer() {
     require(

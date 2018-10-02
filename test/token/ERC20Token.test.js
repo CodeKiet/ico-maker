@@ -5,6 +5,8 @@ const { shouldBehaveLikeMintableToken } = require('./ERC20/MintableToken.behavio
 const { shouldBehaveLikeRBACMintableToken } = require('./ERC20/RBACMintableToken.behaviour');
 const { shouldBehaveLikeBurnableToken } = require('./ERC20/BurnableToken.behaviour');
 const { shouldBehaveLikeStandardToken } = require('./ERC20/StandardToken.behaviour');
+const { shouldBehaveLikeERC1363BasicToken } = require('./ERC1363/ERC1363BasicToken.behaviour');
+
 const { shouldBehaveLikeTokenRecover } = require('../safe/TokenRecover.behaviour');
 
 const BigNumber = web3.BigNumber;
@@ -62,6 +64,17 @@ contract('ERC20Token', function ([owner, anotherAccount, minter, recipient, thir
       await this.token.finishMinting({ from: owner });
     });
     shouldBehaveLikeStandardToken([owner, anotherAccount, recipient], initialBalance);
+  });
+
+  context('like a ERC1363BasicToken', function () {
+    const initialBalance = 1000;
+
+    beforeEach(async function () {
+      await this.token.addMinter(minter, { from: owner });
+      await this.token.mint(owner, initialBalance, { from: minter });
+      await this.token.finishMinting({ from: owner });
+    });
+    shouldBehaveLikeERC1363BasicToken([owner, anotherAccount, recipient], initialBalance);
   });
 
   context('like a ERC20Token token', function () {
