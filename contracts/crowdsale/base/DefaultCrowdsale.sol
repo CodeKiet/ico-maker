@@ -71,18 +71,21 @@ contract DefaultCrowdsale is TimedCrowdsale, CappedCrowdsale, MintedCrowdsale, O
   }
 
   /**
-   * @dev Extend parent behavior to add contributions log
-   * @dev Executed when a purchase has been validated and is ready to be executed. Not necessarily emits/sends tokens.
+   * @dev Update the contributions contract states
    * @param _beneficiary Address receiving the tokens
-   * @param _tokenAmount Number of tokens to be purchased
+   * @param _weiAmount Value in wei involved in the purchase
    */
-  function _processPurchase(
+  function _updatePurchasingState(
     address _beneficiary,
-    uint256 _tokenAmount
+    uint256 _weiAmount
   )
   internal
   {
-    super._processPurchase(_beneficiary, _tokenAmount);
-    contributions.addBalance(_beneficiary, _tokenAmount);
+    super._updatePurchasingState(_beneficiary, _weiAmount);
+    contributions.addBalance(
+      _beneficiary,
+      _weiAmount,
+      _getTokenAmount(_weiAmount)
+    );
   }
 }

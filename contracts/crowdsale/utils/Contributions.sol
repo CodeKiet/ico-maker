@@ -16,39 +16,45 @@ contract Contributions is RBAC, Ownable {
   }
 
   uint256 public totalSoldTokens;
+  uint256 public totalEthRaised;
   mapping(address => uint256) public tokenBalances;
+  mapping(address => uint256) public ethContributions;
   address[] public addresses;
 
   constructor() public {}
 
   function addBalance(
     address _address,
+    uint256 _weiAmount,
     uint256 _tokenAmount
   )
   public
   onlyMinter
   {
-    if (tokenBalances[_address] == 0) {
+    if (ethContributions[_address] == 0) {
       addresses.push(_address);
     }
+    ethContributions[_address] = ethContributions[_address].add(_weiAmount);
+    totalEthRaised = totalEthRaised.add(_weiAmount);
+
     tokenBalances[_address] = tokenBalances[_address].add(_tokenAmount);
     totalSoldTokens = totalSoldTokens.add(_tokenAmount);
   }
 
   /**
    * @dev add a minter role to an address
-   * @param minter address
+   * @param _minter address
    */
-  function addMinter(address minter) public onlyOwner {
-    addRole(minter, ROLE_MINTER);
+  function addMinter(address _minter) public onlyOwner {
+    addRole(_minter, ROLE_MINTER);
   }
 
   /**
    * @dev remove a minter role from an address
-   * @param minter address
+   * @param _minter address
    */
-  function removeMinter(address minter) public onlyOwner {
-    removeRole(minter, ROLE_MINTER);
+  function removeMinter(address _minter) public onlyOwner {
+    removeRole(_minter, ROLE_MINTER);
   }
 
   function getContributorsLength() public view returns (uint) {

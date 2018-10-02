@@ -1,3 +1,4 @@
+const { ether } = require('../../helpers/ether');
 const { assertRevert } = require('../../helpers/assertRevert');
 const expectEvent = require('../../helpers/expectEvent');
 
@@ -10,50 +11,64 @@ require('chai')
 
 const Contributions = artifacts.require('Contributions');
 
-contract('Contributions', function ([_, owner, minter, futureMinter, thirdParty, anotherThirdParty]) {
-  const valueToAdd = new BigNumber(100);
+contract('Contributions', function (
+  [_, owner, minter, futureMinter, anotherFutureMinter, thirdParty, anotherThirdParty]
+) {
+  const tokenToAdd = new BigNumber(100);
+  const ethToAdd = ether(1);
+
   beforeEach(async function () {
     this.contributions = await Contributions.new({ from: owner });
     await this.contributions.addMinter(minter, { from: owner });
   });
 
   describe('if minter is calling', function () {
-    it('should success to add token amount to the address balance', async function () {
-      let balance = await this.contributions.tokenBalances(thirdParty);
-      balance.should.be.bignumber.equal(0);
+    it('should success to add amounts to the address balances', async function () {
+      let tokenBalance = await this.contributions.tokenBalances(thirdParty);
+      tokenBalance.should.be.bignumber.equal(0);
+      let ethBalance = await this.contributions.ethContributions(thirdParty);
+      ethBalance.should.be.bignumber.equal(0);
 
-      await this.contributions.addBalance(thirdParty, valueToAdd, { from: minter });
+      await this.contributions.addBalance(thirdParty, ethToAdd, tokenToAdd, { from: minter });
 
-      balance = await this.contributions.tokenBalances(thirdParty);
-      balance.should.be.bignumber.equal(valueToAdd);
+      tokenBalance = await this.contributions.tokenBalances(thirdParty);
+      tokenBalance.should.be.bignumber.equal(tokenToAdd);
+      ethBalance = await this.contributions.ethContributions(thirdParty);
+      ethBalance.should.be.bignumber.equal(ethToAdd);
 
-      await this.contributions.addBalance(thirdParty, valueToAdd.mul(3), { from: minter });
+      await this.contributions.addBalance(thirdParty, ethToAdd.mul(3), tokenToAdd.mul(3), { from: minter });
 
-      balance = await this.contributions.tokenBalances(thirdParty);
-      balance.should.be.bignumber.equal(valueToAdd.mul(4));
+      tokenBalance = await this.contributions.tokenBalances(thirdParty);
+      tokenBalance.should.be.bignumber.equal(tokenToAdd.mul(4));
+      ethBalance = await this.contributions.ethContributions(thirdParty);
+      ethBalance.should.be.bignumber.equal(ethToAdd.mul(4));
     });
 
-    it('should increase total sold tokens', async function () {
+    it('should increase total sold tokens and total eth raised', async function () {
       let totalSoldTokens = await this.contributions.totalSoldTokens();
+      let totalEthRaised = await this.contributions.totalEthRaised();
       totalSoldTokens.should.be.bignumber.equal(0);
+      totalEthRaised.should.be.bignumber.equal(0);
 
-      await this.contributions.addBalance(thirdParty, valueToAdd, { from: minter });
-      await this.contributions.addBalance(thirdParty, valueToAdd.mul(3), { from: minter });
+      await this.contributions.addBalance(thirdParty, ethToAdd, tokenToAdd, { from: minter });
+      await this.contributions.addBalance(thirdParty, ethToAdd.mul(3), tokenToAdd.mul(3), { from: minter });
 
       totalSoldTokens = await this.contributions.totalSoldTokens();
-      totalSoldTokens.should.be.bignumber.equal(valueToAdd.mul(4));
+      totalEthRaised = await this.contributions.totalEthRaised();
+      totalSoldTokens.should.be.bignumber.equal(tokenToAdd.mul(4));
+      totalEthRaised.should.be.bignumber.equal(ethToAdd.mul(4));
     });
 
     it('should increase array length when different address are passed', async function () {
       let contributorsLength = await this.contributions.getContributorsLength();
       assert.equal(contributorsLength, 0);
 
-      await this.contributions.addBalance(thirdParty, valueToAdd, { from: minter });
+      await this.contributions.addBalance(thirdParty, ethToAdd, tokenToAdd, { from: minter });
 
       contributorsLength = await this.contributions.getContributorsLength();
       assert.equal(contributorsLength, 1);
 
-      await this.contributions.addBalance(anotherThirdParty, valueToAdd, { from: minter });
+      await this.contributions.addBalance(anotherThirdParty, ethToAdd, tokenToAdd, { from: minter });
 
       contributorsLength = await this.contributions.getContributorsLength();
       assert.equal(contributorsLength, 2);
@@ -63,50 +78,62 @@ contract('Contributions', function ([_, owner, minter, futureMinter, thirdParty,
       let contributorsLength = await this.contributions.getContributorsLength();
       assert.equal(contributorsLength, 0);
 
-      await this.contributions.addBalance(thirdParty, valueToAdd, { from: minter });
+      await this.contributions.addBalance(thirdParty, ethToAdd, tokenToAdd, { from: minter });
 
       contributorsLength = await this.contributions.getContributorsLength();
       assert.equal(contributorsLength, 1);
 
-      await this.contributions.addBalance(thirdParty, valueToAdd, { from: minter });
+      await this.contributions.addBalance(thirdParty, ethToAdd, tokenToAdd, { from: minter });
 
       contributorsLength = await this.contributions.getContributorsLength();
       assert.equal(contributorsLength, 1);
     });
 
     it('should cycle addresses and have the right value set', async function () {
-      await this.contributions.addBalance(owner, valueToAdd.mul(3), { from: minter });
-      await this.contributions.addBalance(thirdParty, valueToAdd.mul(4), { from: minter });
-      await this.contributions.addBalance(anotherThirdParty, valueToAdd, { from: minter });
-      await this.contributions.addBalance(anotherThirdParty, valueToAdd, { from: minter });
+      await this.contributions.addBalance(owner, ethToAdd.mul(3), tokenToAdd.mul(3), { from: minter });
+      await this.contributions.addBalance(thirdParty, ethToAdd.mul(4), tokenToAdd.mul(4), { from: minter });
+      await this.contributions.addBalance(anotherThirdParty, ethToAdd, tokenToAdd, { from: minter });
+      await this.contributions.addBalance(anotherThirdParty, ethToAdd, tokenToAdd, { from: minter });
 
-      const balances = [];
-      balances[owner] = await this.contributions.tokenBalances(owner);
-      balances[thirdParty] = await this.contributions.tokenBalances(thirdParty);
-      balances[anotherThirdParty] = await this.contributions.tokenBalances(anotherThirdParty);
+      const tokenBalances = [];
+      tokenBalances[owner] = await this.contributions.tokenBalances(owner);
+      tokenBalances[thirdParty] = await this.contributions.tokenBalances(thirdParty);
+      tokenBalances[anotherThirdParty] = await this.contributions.tokenBalances(anotherThirdParty);
+
+      const ethBalances = [];
+      ethBalances[owner] = await this.contributions.ethContributions(owner);
+      ethBalances[thirdParty] = await this.contributions.ethContributions(thirdParty);
+      ethBalances[anotherThirdParty] = await this.contributions.ethContributions(anotherThirdParty);
 
       const contributorsLength = (await this.contributions.getContributorsLength()).valueOf();
 
       for (let i = 0; i < contributorsLength; i++) {
         const address = await this.contributions.addresses(i);
-        const balance = await this.contributions.tokenBalances(address);
+        const tokenBalance = await this.contributions.tokenBalances(address);
+        const ethBalance = await this.contributions.ethContributions(address);
 
-        balance.should.be.bignumber.equal(balances[address]);
+        tokenBalance.should.be.bignumber.equal(tokenBalances[address]);
+        ethBalance.should.be.bignumber.equal(ethBalances[address]);
       }
     });
   });
 
   describe('if third party is calling', function () {
-    it('reverts and fail to add token amount to the address balance', async function () {
-      let balance = await this.contributions.tokenBalances(thirdParty);
-      assert.equal(balance, 0);
+    it('reverts and fail to add amounts to the address balances', async function () {
+      let tokenBalance = await this.contributions.tokenBalances(thirdParty);
+      let ethBalance = await this.contributions.ethContributions(thirdParty);
+      assert.equal(tokenBalance, 0);
+      assert.equal(ethBalance, 0);
 
       await assertRevert(
-        this.contributions.addBalance(thirdParty, valueToAdd, { from: thirdParty })
+        this.contributions.addBalance(thirdParty, ethToAdd, tokenToAdd, { from: thirdParty })
       );
 
-      balance = await this.contributions.tokenBalances(thirdParty);
-      assert.equal(balance, 0);
+      tokenBalance = await this.contributions.tokenBalances(thirdParty);
+      ethBalance = await this.contributions.ethContributions(thirdParty);
+
+      assert.equal(tokenBalance, 0);
+      assert.equal(ethBalance, 0);
     });
   });
 
