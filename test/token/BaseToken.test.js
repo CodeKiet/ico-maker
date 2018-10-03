@@ -16,15 +16,15 @@ require('chai')
   .use(require('chai-bignumber')(BigNumber))
   .should();
 
-const ERC20Token = artifacts.require('ERC20Token');
+const BaseToken = artifacts.require('BaseToken');
 
-contract('ERC20Token', function ([owner, anotherAccount, minter, recipient, thirdParty]) {
-  const _name = 'ERC20Token';
+contract('BaseToken', function ([owner, anotherAccount, minter, recipient, thirdParty]) {
+  const _name = 'BaseToken';
   const _symbol = 'ERC20';
   const _decimals = 18;
 
   beforeEach(async function () {
-    this.token = await ERC20Token.new(_name, _symbol, _decimals, { from: owner });
+    this.token = await BaseToken.new(_name, _symbol, _decimals, { from: owner });
   });
 
   context('like a DetailedERC20 token', function () {
@@ -77,7 +77,7 @@ contract('ERC20Token', function ([owner, anotherAccount, minter, recipient, thir
     shouldBehaveLikeERC1363BasicToken([owner, anotherAccount, recipient], initialBalance);
   });
 
-  context('like a ERC20Token token', function () {
+  context('like a BaseToken token', function () {
     const initialBalance = 1000;
 
     beforeEach(async function () {

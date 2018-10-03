@@ -74,7 +74,7 @@ npm install -g truffle-flattener
 Usage 
 
 ```bash
-truffle-flattener contracts/ERC20Token.sol >> dist/ERC20Token.dist.sol
+truffle-flattener contracts/token/BaseToken.sol >> dist/BaseToken.dist.sol
 ```
 
 ## Links

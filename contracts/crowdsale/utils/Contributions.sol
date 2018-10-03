@@ -16,9 +16,9 @@ contract Contributions is RBAC, Ownable {
   }
 
   uint256 public totalSoldTokens;
-  uint256 public totalEthRaised;
+  uint256 public totalWeiRaised;
   mapping(address => uint256) public tokenBalances;
-  mapping(address => uint256) public ethContributions;
+  mapping(address => uint256) public weiContributions;
   address[] public addresses;
 
   constructor() public {}
@@ -31,11 +31,11 @@ contract Contributions is RBAC, Ownable {
   public
   onlyMinter
   {
-    if (ethContributions[_address] == 0) {
+    if (weiContributions[_address] == 0) {
       addresses.push(_address);
     }
-    ethContributions[_address] = ethContributions[_address].add(_weiAmount);
-    totalEthRaised = totalEthRaised.add(_weiAmount);
+    weiContributions[_address] = weiContributions[_address].add(_weiAmount);
+    totalWeiRaised = totalWeiRaised.add(_weiAmount);
 
     tokenBalances[_address] = tokenBalances[_address].add(_tokenAmount);
     totalSoldTokens = totalSoldTokens.add(_tokenAmount);

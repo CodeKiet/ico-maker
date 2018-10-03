@@ -10,14 +10,14 @@ require('chai')
   .should();
 
 const CappedBountyMinter = artifacts.require('CappedBountyMinter');
-const ERC20Token = artifacts.require('ERC20Token');
+const BaseToken = artifacts.require('BaseToken');
 
 const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
 
 contract('CappedBountyMinter', function (
   [tokenOwner, bountyOwner, anotherAccount, receiver1, receiver2, receiver3, thirdParty]
 ) {
-  const _name = 'ERC20Token';
+  const _name = 'BaseToken';
   const _symbol = 'ERC20';
   const _decimals = 18;
 
@@ -31,7 +31,7 @@ contract('CappedBountyMinter', function (
   ];
 
   beforeEach(async function () {
-    this.token = await ERC20Token.new(_name, _symbol, _decimals, { from: tokenOwner });
+    this.token = await BaseToken.new(_name, _symbol, _decimals, { from: tokenOwner });
     this.decimals = await this.token.decimals();
     this.bounty = await CappedBountyMinter.new(this.token.address, cap, { from: bountyOwner });
     await this.token.addMinter(this.bounty.address, { from: tokenOwner });

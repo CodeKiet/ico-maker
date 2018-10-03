@@ -9,7 +9,7 @@ import "../safe/TokenRecover.sol";
 
 
 // solium-disable-next-line max-len
-contract ERC20Token is DetailedERC20, RBACMintableToken, BurnableToken, ERC1363BasicToken, TokenRecover {
+contract BaseToken is DetailedERC20, RBACMintableToken, BurnableToken, ERC1363BasicToken, TokenRecover {
 
   modifier canTransfer() {
     require(

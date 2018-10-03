@@ -1,12 +1,12 @@
 pragma solidity ^0.4.24;
 
-import "../token/ERC20Token.sol";
+import "../token/BaseToken.sol";
 
 
 contract CappedBountyMinter is Ownable, TokenRecover {
   using SafeMath for uint256;
 
-  ERC20Token public token;
+  BaseToken public token;
 
   uint256 public cap;
   uint256 public totalGivenBountyTokens;
@@ -24,7 +24,7 @@ contract CappedBountyMinter is Ownable, TokenRecover {
       "Bounty cap should be greater than zero."
     );
 
-    token = ERC20Token(_token);
+    token = BaseToken(_token);
 
     decimals = uint256(token.decimals());
     cap = _cap * (10 ** decimals);

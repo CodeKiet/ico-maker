@@ -7,12 +7,12 @@ import "openzeppelin-solidity/contracts/crowdsale/validation/CappedCrowdsale.sol
 // solium-disable-next-line max-len
 import "openzeppelin-solidity/contracts/crowdsale/emission/MintedCrowdsale.sol";
 
-import "../utils/Contributions.sol";
-import "../../safe/TokenRecover.sol";
+import "./utils/Contributions.sol";
+import "../safe/TokenRecover.sol";
 
 
 // solium-disable-next-line max-len
-contract DefaultCrowdsale is TimedCrowdsale, CappedCrowdsale, MintedCrowdsale, Ownable, TokenRecover {
+contract BaseCrowdsale is TimedCrowdsale, CappedCrowdsale, MintedCrowdsale, Ownable, TokenRecover {
 
   Contributions public contributions;
 

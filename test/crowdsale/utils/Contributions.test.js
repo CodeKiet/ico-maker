@@ -26,37 +26,37 @@ contract('Contributions', function (
     it('should success to add amounts to the address balances', async function () {
       let tokenBalance = await this.contributions.tokenBalances(thirdParty);
       tokenBalance.should.be.bignumber.equal(0);
-      let ethBalance = await this.contributions.ethContributions(thirdParty);
+      let ethBalance = await this.contributions.weiContributions(thirdParty);
       ethBalance.should.be.bignumber.equal(0);
 
       await this.contributions.addBalance(thirdParty, ethToAdd, tokenToAdd, { from: minter });
 
       tokenBalance = await this.contributions.tokenBalances(thirdParty);
       tokenBalance.should.be.bignumber.equal(tokenToAdd);
-      ethBalance = await this.contributions.ethContributions(thirdParty);
+      ethBalance = await this.contributions.weiContributions(thirdParty);
       ethBalance.should.be.bignumber.equal(ethToAdd);
 
       await this.contributions.addBalance(thirdParty, ethToAdd.mul(3), tokenToAdd.mul(3), { from: minter });
 
       tokenBalance = await this.contributions.tokenBalances(thirdParty);
       tokenBalance.should.be.bignumber.equal(tokenToAdd.mul(4));
-      ethBalance = await this.contributions.ethContributions(thirdParty);
+      ethBalance = await this.contributions.weiContributions(thirdParty);
       ethBalance.should.be.bignumber.equal(ethToAdd.mul(4));
     });
 
-    it('should increase total sold tokens and total eth raised', async function () {
+    it('should increase total sold tokens and total wei raised', async function () {
       let totalSoldTokens = await this.contributions.totalSoldTokens();
-      let totalEthRaised = await this.contributions.totalEthRaised();
+      let totalWeiRaised = await this.contributions.totalWeiRaised();
       totalSoldTokens.should.be.bignumber.equal(0);
-      totalEthRaised.should.be.bignumber.equal(0);
+      totalWeiRaised.should.be.bignumber.equal(0);
 
       await this.contributions.addBalance(thirdParty, ethToAdd, tokenToAdd, { from: minter });
       await this.contributions.addBalance(thirdParty, ethToAdd.mul(3), tokenToAdd.mul(3), { from: minter });
 
       totalSoldTokens = await this.contributions.totalSoldTokens();
-      totalEthRaised = await this.contributions.totalEthRaised();
+      totalWeiRaised = await this.contributions.totalWeiRaised();
       totalSoldTokens.should.be.bignumber.equal(tokenToAdd.mul(4));
-      totalEthRaised.should.be.bignumber.equal(ethToAdd.mul(4));
+      totalWeiRaised.should.be.bignumber.equal(ethToAdd.mul(4));
     });
 
     it('should increase array length when different address are passed', async function () {
@@ -101,16 +101,16 @@ contract('Contributions', function (
       tokenBalances[anotherThirdParty] = await this.contributions.tokenBalances(anotherThirdParty);
 
       const ethBalances = [];
-      ethBalances[owner] = await this.contributions.ethContributions(owner);
-      ethBalances[thirdParty] = await this.contributions.ethContributions(thirdParty);
-      ethBalances[anotherThirdParty] = await this.contributions.ethContributions(anotherThirdParty);
+      ethBalances[owner] = await this.contributions.weiContributions(owner);
+      ethBalances[thirdParty] = await this.contributions.weiContributions(thirdParty);
+      ethBalances[anotherThirdParty] = await this.contributions.weiContributions(anotherThirdParty);
 
       const contributorsLength = (await this.contributions.getContributorsLength()).valueOf();
 
       for (let i = 0; i < contributorsLength; i++) {
         const address = await this.contributions.addresses(i);
         const tokenBalance = await this.contributions.tokenBalances(address);
-        const ethBalance = await this.contributions.ethContributions(address);
+        const ethBalance = await this.contributions.weiContributions(address);
 
         tokenBalance.should.be.bignumber.equal(tokenBalances[address]);
         ethBalance.should.be.bignumber.equal(ethBalances[address]);
@@ -121,7 +121,7 @@ contract('Contributions', function (
   describe('if third party is calling', function () {
     it('reverts and fail to add amounts to the address balances', async function () {
       let tokenBalance = await this.contributions.tokenBalances(thirdParty);
-      let ethBalance = await this.contributions.ethContributions(thirdParty);
+      let ethBalance = await this.contributions.weiContributions(thirdParty);
       assert.equal(tokenBalance, 0);
       assert.equal(ethBalance, 0);
 
@@ -130,7 +130,7 @@ contract('Contributions', function (
       );
 
       tokenBalance = await this.contributions.tokenBalances(thirdParty);
-      ethBalance = await this.contributions.ethContributions(thirdParty);
+      ethBalance = await this.contributions.weiContributions(thirdParty);
 
       assert.equal(tokenBalance, 0);
       assert.equal(ethBalance, 0);
