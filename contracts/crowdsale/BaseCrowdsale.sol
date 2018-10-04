@@ -1,14 +1,10 @@
 pragma solidity ^0.4.24;
 
-// solium-disable-next-line max-len
-import "openzeppelin-solidity/contracts/crowdsale/validation/TimedCrowdsale.sol";
-// solium-disable-next-line max-len
-import "openzeppelin-solidity/contracts/crowdsale/validation/CappedCrowdsale.sol";
-// solium-disable-next-line max-len
-import "openzeppelin-solidity/contracts/crowdsale/emission/MintedCrowdsale.sol";
-
+import "openzeppelin-solidity/contracts/crowdsale/validation/TimedCrowdsale.sol"; // solium-disable-line max-len
+import "openzeppelin-solidity/contracts/crowdsale/validation/CappedCrowdsale.sol"; // solium-disable-line max-len
+import "openzeppelin-solidity/contracts/crowdsale/emission/MintedCrowdsale.sol"; // solium-disable-line max-len
+import "eth-token-recover/contracts/TokenRecover.sol";
 import "./utils/Contributions.sol";
-import "../safe/TokenRecover.sol";
 
 
 // solium-disable-next-line max-len

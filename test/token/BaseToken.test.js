@@ -1,13 +1,12 @@
 const { assertRevert } = require('../helpers/assertRevert');
 
+const { shouldBehaveLikeTokenRecover } = require('eth-token-recover/test/TokenRecover.behaviour');
 const { shouldBehaveLikeDetailedERC20Token } = require('./ERC20/DetailedERC20.behaviour');
 const { shouldBehaveLikeMintableToken } = require('./ERC20/MintableToken.behaviour');
 const { shouldBehaveLikeRBACMintableToken } = require('./ERC20/RBACMintableToken.behaviour');
 const { shouldBehaveLikeBurnableToken } = require('./ERC20/BurnableToken.behaviour');
 const { shouldBehaveLikeStandardToken } = require('./ERC20/StandardToken.behaviour');
 const { shouldBehaveLikeERC1363BasicToken } = require('./ERC1363/ERC1363BasicToken.behaviour');
-
-const { shouldBehaveLikeTokenRecover } = require('../safe/TokenRecover.behaviour');
 
 const BigNumber = web3.BigNumber;
 

@@ -1,10 +1,10 @@
 const { increaseTimeTo } = require('../../helpers/increaseTime');
 const { assertRevert } = require('../../helpers/assertRevert');
 
+const { shouldBehaveLikeTokenRecover } = require('eth-token-recover/test/TokenRecover.behaviour');
 const { shouldBehaveLikeMintedCrowdsale } = require('./MintedCrowdsale.behaviour');
 const { shouldBehaveLikeTimedCrowdsale } = require('./TimedCrowdsale.behaviour');
 const { shouldBehaveLikeCappedCrowdsale } = require('./CappedCrowdsale.behaviour');
-const { shouldBehaveLikeTokenRecover } = require('../../safe/TokenRecover.behaviour');
 
 const BigNumber = web3.BigNumber;
 

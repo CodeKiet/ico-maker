@@ -1,6 +1,6 @@
 const { assertRevert } = require('../helpers/assertRevert');
 
-const { shouldBehaveLikeTokenRecover } = require('../safe/TokenRecover.behaviour');
+const { shouldBehaveLikeTokenRecover } = require('eth-token-recover/test/TokenRecover.behaviour');
 
 const BigNumber = web3.BigNumber;
 
