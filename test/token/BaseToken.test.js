@@ -24,7 +24,7 @@ const ERC1363Receiver = artifacts.require('ERC1363ReceiverMock.sol');
 const ROLE_OPERATOR = 'operator';
 const RECEIVER_MAGIC_VALUE = '0x88a7ca5c';
 
-contract('BaseToken', function ([owner, anotherAccount, minter, recipient, thirdParty]) {
+contract('BaseToken', function ([owner, anotherAccount, minter, operator, recipient, thirdParty]) {
   const _name = 'BaseToken';
   const _symbol = 'ERC20';
   const _decimals = 18;
@@ -111,7 +111,7 @@ contract('BaseToken', function ([owner, anotherAccount, minter, recipient, third
     context('before finish minting', function () {
       describe('if it is not an operator', function () {
         it('should fail transfer', async function () {
-          await assertRevert(this.token.transfer(owner, initialBalance, { from: owner }));
+          await assertRevert(this.token.transfer(recipient, initialBalance, { from: owner }));
         });
 
         it('should fail transferFrom', async function () {
@@ -191,16 +191,20 @@ contract('BaseToken', function ([owner, anotherAccount, minter, recipient, third
 
       describe('if it is an operator', function () {
         beforeEach(async function () {
-          await this.token.addOperator(owner, { from: owner });
+          await this.token.addMinter(minter, { from: owner });
+          await this.token.mint(operator, initialBalance, { from: minter });
+          await this.token.addOperator(operator, { from: owner });
         });
 
         it('should transfer', async function () {
-          await this.token.transfer(owner, initialBalance, { from: owner }).should.be.fulfilled;
+          await this.token.transfer(operator, initialBalance, { from: operator }).should.be.fulfilled;
         });
 
         it('should transferFrom', async function () {
-          await this.token.approve(anotherAccount, initialBalance, { from: owner });
-          await this.token.transferFrom(owner, recipient, initialBalance, { from: anotherAccount }).should.be.fulfilled;
+          await this.token.approve(anotherAccount, initialBalance, { from: operator });
+          await this.token.transferFrom(
+            operator, recipient, initialBalance, { from: anotherAccount }
+          ).should.be.fulfilled;
         });
 
         it('should transferAndCall', async function () {
@@ -227,16 +231,16 @@ contract('BaseToken', function ([owner, anotherAccount, minter, recipient, third
           };
 
           await transferAndCallWithData.call(
-            this, this.receiver.address, initialBalance / 2, { from: owner }
+            this, this.receiver.address, initialBalance / 2, { from: operator }
           ).should.be.fulfilled;
 
           await transferAndCallWithoutData.call(
-            this, this.receiver.address, initialBalance / 2, { from: owner }
+            this, this.receiver.address, initialBalance / 2, { from: operator }
           ).should.be.fulfilled;
         });
 
         it('should transferFromAndCall', async function () {
-          await this.token.approve(anotherAccount, initialBalance, { from: owner });
+          await this.token.approve(anotherAccount, initialBalance, { from: operator });
           this.receiver = await ERC1363Receiver.new(RECEIVER_MAGIC_VALUE, false);
 
           const transferFromAndCallWithData = function (from, to, value, opts) {
@@ -260,11 +264,11 @@ contract('BaseToken', function ([owner, anotherAccount, minter, recipient, third
           };
 
           await transferFromAndCallWithData.call(
-            this, owner, this.receiver.address, initialBalance / 2, { from: anotherAccount }
+            this, operator, this.receiver.address, initialBalance / 2, { from: anotherAccount }
           ).should.be.fulfilled;
 
           await transferFromAndCallWithoutData.call(
-            this, owner, this.receiver.address, initialBalance / 2, { from: anotherAccount }
+            this, operator, this.receiver.address, initialBalance / 2, { from: anotherAccount }
           ).should.be.fulfilled;
         });
       });
