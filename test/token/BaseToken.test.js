@@ -29,7 +29,7 @@ contract('BaseToken', function ([owner, anotherAccount, minter, recipient, third
   const _symbol = 'ERC20';
   const _decimals = 18;
 
-  const initialBalance = new BigNumber(1000);
+  const initialBalance = 1000;
 
   beforeEach(async function () {
     this.token = await BaseToken.new(_name, _symbol, _decimals, { from: owner });
@@ -226,9 +226,9 @@ contract('BaseToken', function ([owner, anotherAccount, minter, recipient, third
             );
           };
 
-          await transferAndCallWithData.call(this, this.receiver.address, initialBalance.div(2), { from: owner });
+          await transferAndCallWithData.call(this, this.receiver.address, initialBalance / 2, { from: owner });
 
-          await transferAndCallWithoutData.call(this, this.receiver.address, initialBalance.div(2), { from: owner });
+          await transferAndCallWithoutData.call(this, this.receiver.address, initialBalance / 2, { from: owner });
         });
 
         it('should transferFromAndCall', async function () {
@@ -256,11 +256,11 @@ contract('BaseToken', function ([owner, anotherAccount, minter, recipient, third
           };
 
           await transferFromAndCallWithData.call(
-            this, owner, this.receiver.address, initialBalance.div(2), { from: anotherAccount }
+            this, owner, this.receiver.address, initialBalance / 2, { from: anotherAccount }
           );
 
           await transferFromAndCallWithoutData.call(
-            this, owner, this.receiver.address, initialBalance.div(2), { from: anotherAccount }
+            this, owner, this.receiver.address, initialBalance / 2, { from: anotherAccount }
           );
         });
       });
