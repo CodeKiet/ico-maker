@@ -195,12 +195,12 @@ contract('BaseToken', function ([owner, anotherAccount, minter, recipient, third
         });
 
         it('should transfer', async function () {
-          await this.token.transfer(owner, initialBalance, { from: owner });
+          await this.token.transfer(owner, initialBalance, { from: owner }).should.be.fulfilled;
         });
 
         it('should transferFrom', async function () {
           await this.token.approve(anotherAccount, initialBalance, { from: owner });
-          await this.token.transferFrom(owner, recipient, initialBalance, { from: anotherAccount });
+          await this.token.transferFrom(owner, recipient, initialBalance, { from: anotherAccount }).should.be.fulfilled;
         });
 
         it('should transferAndCall', async function () {
@@ -226,9 +226,13 @@ contract('BaseToken', function ([owner, anotherAccount, minter, recipient, third
             );
           };
 
-          await transferAndCallWithData.call(this, this.receiver.address, initialBalance / 2, { from: owner });
+          await transferAndCallWithData.call(
+            this, this.receiver.address, initialBalance / 2, { from: owner }
+          ).should.be.fulfilled;
 
-          await transferAndCallWithoutData.call(this, this.receiver.address, initialBalance / 2, { from: owner });
+          await transferAndCallWithoutData.call(
+            this, this.receiver.address, initialBalance / 2, { from: owner }
+          ).should.be.fulfilled;
         });
 
         it('should transferFromAndCall', async function () {
@@ -257,11 +261,11 @@ contract('BaseToken', function ([owner, anotherAccount, minter, recipient, third
 
           await transferFromAndCallWithData.call(
             this, owner, this.receiver.address, initialBalance / 2, { from: anotherAccount }
-          );
+          ).should.be.fulfilled;
 
           await transferFromAndCallWithoutData.call(
             this, owner, this.receiver.address, initialBalance / 2, { from: anotherAccount }
-          );
+          ).should.be.fulfilled;
         });
       });
     });
