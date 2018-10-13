@@ -1,4 +1,6 @@
-const { assertRevert } = require('../helpers/assertRevert');
+const { expectThrow } = require('openzeppelin-solidity/test/helpers/expectThrow');
+const { assertRevert } = require('openzeppelin-solidity/test/helpers/assertRevert');
+const { sendTransaction } = require('openzeppelin-solidity/test/helpers/sendTransaction');
 
 const { shouldBehaveLikeTokenRecover } = require('eth-token-recover/test/TokenRecover.behaviour');
 const { shouldBehaveLikeERC1363BasicToken } = require('erc-payable-token/test/token/ERC1363/ERC1363BasicToken.behaviour'); // eslint-disable-line max-len
@@ -17,11 +19,17 @@ require('chai')
   .should();
 
 const BaseToken = artifacts.require('BaseToken');
+const ERC1363Receiver = artifacts.require('ERC1363ReceiverMock.sol');
+
+const ROLE_OPERATOR = 'operator';
+const RECEIVER_MAGIC_VALUE = '0x88a7ca5c';
 
 contract('BaseToken', function ([owner, anotherAccount, minter, recipient, thirdParty]) {
   const _name = 'BaseToken';
   const _symbol = 'ERC20';
   const _decimals = 18;
+
+  const initialBalance = new BigNumber(1000);
 
   beforeEach(async function () {
     this.token = await BaseToken.new(_name, _symbol, _decimals, { from: owner });
@@ -46,8 +54,6 @@ contract('BaseToken', function ([owner, anotherAccount, minter, recipient, third
   });
 
   context('like a BurnableToken', function () {
-    const initialBalance = 1000;
-
     beforeEach(async function () {
       await this.token.addMinter(minter, { from: owner });
       await this.token.mint(owner, initialBalance, { from: minter });
@@ -56,8 +62,6 @@ contract('BaseToken', function ([owner, anotherAccount, minter, recipient, third
   });
 
   context('like a StandardToken', function () {
-    const initialBalance = 1000;
-
     beforeEach(async function () {
       await this.token.addMinter(minter, { from: owner });
       await this.token.mint(owner, initialBalance, { from: minter });
@@ -67,8 +71,6 @@ contract('BaseToken', function ([owner, anotherAccount, minter, recipient, third
   });
 
   context('like a ERC1363BasicToken', function () {
-    const initialBalance = 1000;
-
     beforeEach(async function () {
       await this.token.addMinter(minter, { from: owner });
       await this.token.mint(owner, initialBalance, { from: minter });
@@ -78,20 +80,190 @@ contract('BaseToken', function ([owner, anotherAccount, minter, recipient, third
   });
 
   context('like a BaseToken token', function () {
-    const initialBalance = 1000;
-
     beforeEach(async function () {
       await this.token.addMinter(minter, { from: owner });
       await this.token.mint(owner, initialBalance, { from: minter });
     });
 
-    it('should fail transfer before finish minting', async function () {
-      await assertRevert(this.token.transfer(owner, initialBalance, { from: owner }));
+    describe('handle operator role', function () {
+      it('owner can add and remove a operator role', async function () {
+        await this.token.addOperator(anotherAccount, { from: owner });
+        let hasRole = await this.token.hasRole(anotherAccount, ROLE_OPERATOR);
+        assert.equal(hasRole, true);
+
+        await this.token.removeOperator(anotherAccount, { from: owner });
+        hasRole = await this.token.hasRole(anotherAccount, ROLE_OPERATOR);
+        assert.equal(hasRole, false);
+      });
+
+      it('another account can\'t add or remove a operator role', async function () {
+        await expectThrow(
+          this.token.addOperator(anotherAccount, { from: anotherAccount })
+        );
+
+        await this.token.addOperator(anotherAccount, { from: owner });
+        await expectThrow(
+          this.token.removeOperator(anotherAccount, { from: anotherAccount })
+        );
+      });
     });
 
-    it('should fail transferFrom before finish minting', async function () {
-      await this.token.approve(anotherAccount, initialBalance, { from: owner });
-      await assertRevert(this.token.transferFrom(owner, recipient, initialBalance, { from: anotherAccount }));
+    context('before finish minting', function () {
+      describe('if it is not an operator', function () {
+        it('should fail transfer', async function () {
+          await assertRevert(this.token.transfer(owner, initialBalance, { from: owner }));
+        });
+
+        it('should fail transferFrom', async function () {
+          await this.token.approve(anotherAccount, initialBalance, { from: owner });
+          await assertRevert(this.token.transferFrom(owner, recipient, initialBalance, { from: anotherAccount }));
+        });
+
+        it('should fail to transferAndCall', async function () {
+          this.receiver = await ERC1363Receiver.new(RECEIVER_MAGIC_VALUE, false);
+
+          const transferAndCallWithData = function (to, value, opts) {
+            return sendTransaction(
+              this.token,
+              'transferAndCall',
+              'address,uint256,bytes',
+              [to, value, '0x42'],
+              opts
+            );
+          };
+
+          const transferAndCallWithoutData = function (to, value, opts) {
+            return sendTransaction(
+              this.token,
+              'transferAndCall',
+              'address,uint256',
+              [to, value],
+              opts
+            );
+          };
+
+          await assertRevert(
+            transferAndCallWithData.call(this, this.receiver.address, initialBalance, { from: owner })
+          );
+
+          await assertRevert(
+            transferAndCallWithoutData.call(this, this.receiver.address, initialBalance, { from: owner })
+          );
+        });
+
+        it('should fail to transferFromAndCall', async function () {
+          await this.token.approve(anotherAccount, initialBalance, { from: owner });
+          this.receiver = await ERC1363Receiver.new(RECEIVER_MAGIC_VALUE, false);
+
+          const transferFromAndCallWithData = function (from, to, value, opts) {
+            return sendTransaction(
+              this.token,
+              'transferFromAndCall',
+              'address,address,uint256,bytes',
+              [from, to, value, '0x42'],
+              opts
+            );
+          };
+
+          const transferFromAndCallWithoutData = function (from, to, value, opts) {
+            return sendTransaction(
+              this.token,
+              'transferFromAndCall',
+              'address,address,uint256',
+              [from, to, value],
+              opts
+            );
+          };
+
+          await assertRevert(
+            transferFromAndCallWithData.call(
+              this, owner, this.receiver.address, initialBalance, { from: anotherAccount }
+            )
+          );
+
+          await assertRevert(
+            transferFromAndCallWithoutData.call(
+              this, owner, this.receiver.address, initialBalance, { from: anotherAccount }
+            )
+          );
+        });
+      });
+
+      describe('if it is an operator', function () {
+        beforeEach(async function () {
+          await this.token.addOperator(owner, { from: owner });
+        });
+
+        it('should transfer', async function () {
+          await this.token.transfer(owner, initialBalance, { from: owner });
+        });
+
+        it('should transferFrom', async function () {
+          await this.token.approve(anotherAccount, initialBalance, { from: owner });
+          await this.token.transferFrom(owner, recipient, initialBalance, { from: anotherAccount });
+        });
+
+        it('should transferAndCall', async function () {
+          this.receiver = await ERC1363Receiver.new(RECEIVER_MAGIC_VALUE, false);
+
+          const transferAndCallWithData = function (to, value, opts) {
+            return sendTransaction(
+              this.token,
+              'transferAndCall',
+              'address,uint256,bytes',
+              [to, value, '0x42'],
+              opts
+            );
+          };
+
+          const transferAndCallWithoutData = function (to, value, opts) {
+            return sendTransaction(
+              this.token,
+              'transferAndCall',
+              'address,uint256',
+              [to, value],
+              opts
+            );
+          };
+
+          await transferAndCallWithData.call(this, this.receiver.address, initialBalance.div(2), { from: owner });
+
+          await transferAndCallWithoutData.call(this, this.receiver.address, initialBalance.div(2), { from: owner });
+        });
+
+        it('should transferFromAndCall', async function () {
+          await this.token.approve(anotherAccount, initialBalance, { from: owner });
+          this.receiver = await ERC1363Receiver.new(RECEIVER_MAGIC_VALUE, false);
+
+          const transferFromAndCallWithData = function (from, to, value, opts) {
+            return sendTransaction(
+              this.token,
+              'transferFromAndCall',
+              'address,address,uint256,bytes',
+              [from, to, value, '0x42'],
+              opts
+            );
+          };
+
+          const transferFromAndCallWithoutData = function (from, to, value, opts) {
+            return sendTransaction(
+              this.token,
+              'transferFromAndCall',
+              'address,address,uint256',
+              [from, to, value],
+              opts
+            );
+          };
+
+          await transferFromAndCallWithData.call(
+            this, owner, this.receiver.address, initialBalance.div(2), { from: anotherAccount }
+          );
+
+          await transferFromAndCallWithoutData.call(
+            this, owner, this.receiver.address, initialBalance.div(2), { from: anotherAccount }
+          );
+        });
+      });
     });
   });
 

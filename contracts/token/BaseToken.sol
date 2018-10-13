@@ -7,13 +7,26 @@ import "erc-payable-token/contracts/token/ERC1363/ERC1363BasicToken.sol";
 import "eth-token-recover/contracts/TokenRecover.sol";
 
 
-// solium-disable-next-line max-len
-contract BaseToken is DetailedERC20, RBACMintableToken, BurnableToken, ERC1363BasicToken, TokenRecover {
+/**
+ * @title BaseToken
+ * @author Vittorio Minacori (https://github.com/vittominacori)
+ * @dev BaseToken is an ERC20 token with a lot of stuffs used as Base for any other token contract.
+ *  It is DetailedERC20, RBACMintableToken, BurnableToken, ERC1363BasicToken.
+ */
+contract BaseToken is DetailedERC20, RBACMintableToken, BurnableToken, ERC1363BasicToken, TokenRecover { // solium-disable-line max-len
 
-  modifier canTransfer() {
+  /**
+   * A constant role name for indicating operators.
+   */
+  string public constant ROLE_OPERATOR = "operator";
+
+  /**
+   * @dev Tokens can be moved only after minting finished or if you are an approved operator
+   */
+  modifier canTransfer(address _from, uint256 _value) {
     require(
-      mintingFinished,
-      "Minting should be finished before transfer."
+      mintingFinished || hasRole(_from, ROLE_OPERATOR),
+      "Can't transfer"
     );
     _;
   }
@@ -28,7 +41,7 @@ contract BaseToken is DetailedERC20, RBACMintableToken, BurnableToken, ERC1363Ba
     uint256 _value
   )
   public
-  canTransfer
+  canTransfer(msg.sender, _value)
   returns (bool)
   {
     return super.transfer(_to, _value);
@@ -40,9 +53,25 @@ contract BaseToken is DetailedERC20, RBACMintableToken, BurnableToken, ERC1363Ba
     uint256 _value
   )
   public
-  canTransfer
+  canTransfer(_from, _value)
   returns (bool)
   {
     return super.transferFrom(_from, _to, _value);
+  }
+
+  /**
+   * @dev add an operator role to an address
+   * @param _operator address
+   */
+  function addOperator(address _operator) public onlyOwner {
+    addRole(_operator, ROLE_OPERATOR);
+  }
+
+  /**
+   * @dev remove an operator role from an address
+   * @param _operator address
+   */
+  function removeOperator(address _operator) public onlyOwner {
+    removeRole(_operator, ROLE_OPERATOR);
   }
 }

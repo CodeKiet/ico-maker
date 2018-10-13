@@ -1,4 +1,4 @@
-const { assertRevert } = require('../../helpers/assertRevert');
+const { assertRevert } = require('openzeppelin-solidity/test/helpers/assertRevert');
 
 const BigNumber = web3.BigNumber;
 

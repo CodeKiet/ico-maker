@@ -3,7 +3,13 @@ pragma solidity ^0.4.24;
 import "../token/BaseToken.sol";
 
 
+/**
+ * @title CappedBountyMinter
+ * @author Vittorio Minacori (https://github.com/vittominacori)
+ * @dev Contract to distribute bounty tokens
+ */
 contract CappedBountyMinter is Ownable, TokenRecover {
+
   using SafeMath for uint256;
 
   BaseToken public token;

@@ -1,5 +1,5 @@
-const { increaseTimeTo } = require('../../helpers/increaseTime');
-const { assertRevert } = require('../../helpers/assertRevert');
+const { increaseTimeTo } = require('openzeppelin-solidity/test/helpers/increaseTime');
+const { assertRevert } = require('openzeppelin-solidity/test/helpers/assertRevert');
 
 const { shouldBehaveLikeTokenRecover } = require('eth-token-recover/test/TokenRecover.behaviour');
 const { shouldBehaveLikeMintedCrowdsale } = require('./MintedCrowdsale.behaviour');

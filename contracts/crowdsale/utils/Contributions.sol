@@ -5,13 +5,19 @@ import "openzeppelin-solidity/contracts/access/rbac/RBAC.sol";
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 
 
+/**
+ * @title Contributions
+ * @author Vittorio Minacori (https://github.com/vittominacori)
+ * @dev Utility contract where to save any information about Crowdsale contributions
+ */
 contract Contributions is RBAC, Ownable {
+
   using SafeMath for uint256;
 
-  string public constant ROLE_MINTER = "minter";
+  string public constant ROLE_OPERATOR = "operator";
 
-  modifier onlyMinter () {
-    checkRole(msg.sender, ROLE_MINTER);
+  modifier onlyOperator () {
+    checkRole(msg.sender, ROLE_OPERATOR);
     _;
   }
 
@@ -23,13 +29,19 @@ contract Contributions is RBAC, Ownable {
 
   constructor() public {}
 
+  /**
+   * @dev add contribution into the contributions array
+   * @param _address address
+   * @param _weiAmount uint256
+   * @param _tokenAmount uint256
+   */
   function addBalance(
     address _address,
     uint256 _weiAmount,
     uint256 _tokenAmount
   )
   public
-  onlyMinter
+  onlyOperator
   {
     if (weiContributions[_address] == 0) {
       addresses.push(_address);
@@ -42,21 +54,25 @@ contract Contributions is RBAC, Ownable {
   }
 
   /**
-   * @dev add a minter role to an address
-   * @param _minter address
+   * @dev add a operator role to an address
+   * @param _operator address
    */
-  function addMinter(address _minter) public onlyOwner {
-    addRole(_minter, ROLE_MINTER);
+  function addOperator(address _operator) public onlyOwner {
+    addRole(_operator, ROLE_OPERATOR);
   }
 
   /**
-   * @dev remove a minter role from an address
-   * @param _minter address
+   * @dev remove a operator role from an address
+   * @param _operator address
    */
-  function removeMinter(address _minter) public onlyOwner {
-    removeRole(_minter, ROLE_MINTER);
+  function removeOperator(address _operator) public onlyOwner {
+    removeRole(_operator, ROLE_OPERATOR);
   }
 
+  /**
+   * @dev return the contributions length
+   * @return uint256
+   */
   function getContributorsLength() public view returns (uint) {
     return addresses.length;
   }

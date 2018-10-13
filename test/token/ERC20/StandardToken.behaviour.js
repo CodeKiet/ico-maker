@@ -1,4 +1,4 @@
-const { assertRevert } = require('../../helpers/assertRevert');
+const { assertRevert } = require('openzeppelin-solidity/test/helpers/assertRevert');
 
 function shouldBehaveLikeStandardToken ([owner, recipient, anotherAccount], initialBalance) {
   const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';

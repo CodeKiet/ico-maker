@@ -1,8 +1,8 @@
-const { advanceBlock } = require('../helpers/advanceToBlock');
-const { duration } = require('../helpers/increaseTime');
-const { latestTime } = require('../helpers/latestTime');
-const { ether } = require('../helpers/ether');
-const { assertRevert } = require('../helpers/assertRevert');
+const { advanceBlock } = require('openzeppelin-solidity/test/helpers/advanceToBlock');
+const { duration } = require('openzeppelin-solidity/test/helpers/increaseTime');
+const { latestTime } = require('openzeppelin-solidity/test/helpers/latestTime');
+const { ether } = require('openzeppelin-solidity/test/helpers/ether');
+const { assertRevert } = require('openzeppelin-solidity/test/helpers/assertRevert');
 
 const { shouldBehaveBaseCrowdsale } = require('./base/BaseCrowdsale.behaviour');
 
@@ -53,7 +53,7 @@ contract('BaseCrowdsale', function ([owner, investor, wallet, purchaser, thirdPa
     );
 
     await this.token.addMinter(this.crowdsale.address);
-    await this.contributions.addMinter(this.crowdsale.address);
+    await this.contributions.addOperator(this.crowdsale.address);
   });
 
   context('like a BaseCrowdsale', function () {

@@ -7,8 +7,13 @@ import "eth-token-recover/contracts/TokenRecover.sol";
 import "./utils/Contributions.sol";
 
 
-// solium-disable-next-line max-len
-contract BaseCrowdsale is TimedCrowdsale, CappedCrowdsale, MintedCrowdsale, Ownable, TokenRecover {
+/**
+ * @title BaseCrowdsale
+ * @author Vittorio Minacori (https://github.com/vittominacori)
+ * @dev Extends from Crowdsale with more stuffs like TimedCrowdsale, MintedCrowdsale, TokenCappedCrowdsale.
+ *  Base for any other Crowdsale contract
+ */
+contract BaseCrowdsale is TimedCrowdsale, CappedCrowdsale, MintedCrowdsale, Ownable, TokenRecover { // solium-disable-line max-len
 
   Contributions public contributions;
 
