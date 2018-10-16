@@ -5,6 +5,22 @@
 
 Smart Contracts to build your ICO solution and issue your ERC20 Token.
 
+## Prerequisites
+
+Install truffle.
+
+```bash
+npm install -g truffle      // Version 4.1.14+ required.
+```
+
+Create your Smart Contracts folder and init truffle
+
+```bash
+mkdir MyICO
+cd MyICO 
+truffle init
+```
+
 ## Install
 
 ```bash
@@ -15,7 +31,7 @@ npm install ico-maker
 
 ### BaseToken.sol
 
-[BaseToken](https://github.com/vittominacori/ico-maker/blob/master/contracts/token/BaseToken.sol) is an ERC20 token with a lot of stuffs like Mintable, Burnable and ERC1363 Payable Token behaviours.
+[BaseToken](https://github.com/vittominacori/ico-maker/blob/master/contracts/token/BaseToken.sol) is an ERC20 token with a lot of stuffs like Capped, Mintable, Burnable and ERC1363 Payable Token behaviours.
 
 ```solidity
 pragma solidity ^0.4.24;
@@ -24,8 +40,13 @@ import "ico-maker/contracts/token/BaseToken.sol";
 
 
 contract MyToken is BaseToken {
-  constructor(string _name, string _symbol, uint8 _decimals)
-  BaseToken(_name, _symbol, _decimals)
+  constructor(
+    string _name,
+    string _symbol,
+    uint8 _decimals,
+    uint256 _cap
+  )
+  BaseToken(_name, _symbol, _decimals, _cap)
   public
   {}
 }
