@@ -4,7 +4,7 @@ const { latestTime } = require('openzeppelin-solidity/test/helpers/latestTime');
 const { ether } = require('openzeppelin-solidity/test/helpers/ether');
 const { assertRevert } = require('openzeppelin-solidity/test/helpers/assertRevert');
 
-const { shouldBehaveBaseCrowdsale } = require('./base/BaseCrowdsale.behaviour');
+const { shouldBehaveLikeBaseCrowdsale } = require('./BaseCrowdsale.behaviour');
 
 const BigNumber = web3.BigNumber;
 
@@ -24,6 +24,7 @@ contract('BaseCrowdsale', function ([owner, investor, wallet, purchaser, thirdPa
   const _name = 'BaseToken';
   const _symbol = 'ERC20';
   const _decimals = 18;
+  const _cap = (new BigNumber(10000)).mul(Math.pow(10, _decimals));
 
   const rate = new BigNumber(1000);
   const cap = ether(1);
@@ -39,7 +40,7 @@ contract('BaseCrowdsale', function ([owner, investor, wallet, purchaser, thirdPa
     this.closingTime = this.openingTime + duration.weeks(1);
     this.afterClosingTime = this.closingTime + duration.seconds(1);
 
-    this.token = await BaseToken.new(_name, _symbol, _decimals);
+    this.token = await BaseToken.new(_name, _symbol, _decimals, _cap);
     this.contributions = await Contributions.new();
     this.crowdsale = await BaseCrowdsale.new(
       this.openingTime,
@@ -174,6 +175,6 @@ contract('BaseCrowdsale', function ([owner, investor, wallet, purchaser, thirdPa
       });
     });
 
-    shouldBehaveBaseCrowdsale([owner, investor, wallet, purchaser, thirdParty], rate, minimumContribution);
+    shouldBehaveLikeBaseCrowdsale([owner, investor, wallet, purchaser, thirdParty], rate, minimumContribution);
   });
 });

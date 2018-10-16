@@ -13,15 +13,25 @@ import "./utils/Contributions.sol";
  * @dev Extends from Crowdsale with more stuffs like TimedCrowdsale, MintedCrowdsale, TokenCappedCrowdsale.
  *  Base for any other Crowdsale contract
  */
-contract BaseCrowdsale is TimedCrowdsale, CappedCrowdsale, MintedCrowdsale, Ownable, TokenRecover { // solium-disable-line max-len
+contract BaseCrowdsale is TimedCrowdsale, CappedCrowdsale, MintedCrowdsale, TokenRecover { // solium-disable-line max-len
 
   Contributions public contributions;
 
   uint256 public minimumContribution;
 
+  /**
+   * @param _openingTime Crowdsale opening time
+   * @param _closingTime Crowdsale closing time
+   * @param _rate Number of token units a buyer gets per wei
+   * @param _wallet Address where collected funds will be forwarded to
+   * @param _cap Max amount of wei to be contributed
+   * @param _minimumContribution Min amount of wei to be contributed
+   * @param _token Address of the token being sold
+   * @param _contributions Address of the contributions contract
+   */
   constructor(
-    uint256 _startTime,
-    uint256 _endTime,
+    uint256 _openingTime,
+    uint256 _closingTime,
     uint256 _rate,
     address _wallet,
     uint256 _cap,
@@ -30,7 +40,7 @@ contract BaseCrowdsale is TimedCrowdsale, CappedCrowdsale, MintedCrowdsale, Owna
     address _contributions
   )
   Crowdsale(_rate, _wallet, ERC20(_token))
-  TimedCrowdsale(_startTime, _endTime)
+  TimedCrowdsale(_openingTime, _closingTime)
   CappedCrowdsale(_cap)
   public
   {
@@ -42,13 +52,17 @@ contract BaseCrowdsale is TimedCrowdsale, CappedCrowdsale, MintedCrowdsale, Owna
     minimumContribution = _minimumContribution;
   }
 
-  // false if the ico is not started, true if the ico is started and running, true if the ico is completed
+  /**
+   * @dev false if the ico is not started, true if the ico is started and running, true if the ico is completed
+   */
   function started() public view returns(bool) {
     // solium-disable-next-line security/no-block-members
     return block.timestamp >= openingTime;
   }
 
-  // false if the ico is not started, false if the ico is started and running, true if the ico is completed
+  /**
+   * @dev false if the ico is not started, false if the ico is started and running, true if the ico is completed
+   */
   function ended() public view returns(bool) {
     return hasClosed() || capReached();
   }

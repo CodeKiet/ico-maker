@@ -23,27 +23,28 @@ App = {
 
   initContract: function () {
     $.getJSON('BaseToken.json', function (data) {
-      // Get the necessary contract artifact file and instantiate it with truffle-contract.
       App.contracts.BaseToken = TruffleContract(data);
-
-      // Set the provider for our contract.
       App.contracts.BaseToken.setProvider(App.web3Provider);
     });
 
     $.getJSON('BaseCrowdsale.json', function (data) {
-      // Get the necessary contract artifact file and instantiate it with truffle-contract.
       App.contracts.BaseCrowdsale = TruffleContract(data);
-
-      // Set the provider for our contract.
       App.contracts.BaseCrowdsale.setProvider(App.web3Provider);
     });
 
-    $.getJSON('CappedBountyMinter.json', function (data) {
-      // Get the necessary contract artifact file and instantiate it with truffle-contract.
-      App.contracts.CappedBountyMinter = TruffleContract(data);
+    $.getJSON('Contributions.json', function (data) {
+      App.contracts.Contributions = TruffleContract(data);
+      App.contracts.Contributions.setProvider(App.web3Provider);
+    });
 
-      // Set the provider for our contract.
-      App.contracts.CappedBountyMinter.setProvider(App.web3Provider);
+    $.getJSON('Bounty.json', function (data) {
+      App.contracts.Bounty = TruffleContract(data);
+      App.contracts.Bounty.setProvider(App.web3Provider);
+    });
+
+    $.getJSON('Airdrop.json', function (data) {
+      App.contracts.Airdrop = TruffleContract(data);
+      App.contracts.Airdrop.setProvider(App.web3Provider);
     });
   },
 };

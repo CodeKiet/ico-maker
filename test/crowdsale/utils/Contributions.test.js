@@ -2,6 +2,8 @@ const { ether } = require('openzeppelin-solidity/test/helpers/ether');
 const { assertRevert } = require('openzeppelin-solidity/test/helpers/assertRevert');
 const expectEvent = require('openzeppelin-solidity/test/helpers/expectEvent');
 
+const { shouldBehaveLikeTokenRecover } = require('eth-token-recover/test/TokenRecover.behaviour');
+
 const BigNumber = web3.BigNumber;
 
 require('chai')
@@ -183,5 +185,13 @@ contract('Contributions', function (
         );
       });
     });
+  });
+
+  context('like a TokenRecover', function () {
+    beforeEach(async function () {
+      this.instance = this.contributions;
+    });
+
+    shouldBehaveLikeTokenRecover([owner, thirdParty]);
   });
 });

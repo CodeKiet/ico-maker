@@ -4,11 +4,11 @@ import "../token/BaseToken.sol";
 
 
 /**
- * @title CappedBountyMinter
+ * @title Bounty
  * @author Vittorio Minacori (https://github.com/vittominacori)
  * @dev Contract to distribute bounty tokens
  */
-contract CappedBountyMinter is Ownable, TokenRecover {
+contract Bounty is TokenRecover {
 
   using SafeMath for uint256;
 
@@ -18,8 +18,10 @@ contract CappedBountyMinter is Ownable, TokenRecover {
   uint256 public totalGivenBountyTokens;
   mapping (address => uint256) public givenBountyTokens;
 
-  uint256 decimals;
-
+  /**
+   * @param _token Address of the token being distributed
+   * @param _cap Max amount of token to be distributed
+   */
   constructor(address _token, uint256 _cap) public {
     require(
       _token != address(0),
@@ -31,9 +33,7 @@ contract CappedBountyMinter is Ownable, TokenRecover {
     );
 
     token = BaseToken(_token);
-
-    decimals = uint256(token.decimals());
-    cap = _cap * (10 ** decimals);
+    cap = _cap;
   }
 
   function multiSend(address[] addresses, uint256[] amounts) public onlyOwner {
@@ -52,7 +52,7 @@ contract CappedBountyMinter is Ownable, TokenRecover {
 
     for (uint i = 0; i < addresses.length; i++) {
       address to = addresses[i];
-      uint256 value = amounts[i] * (10 ** decimals);
+      uint256 value = amounts[i];
 
       givenBountyTokens[to] = givenBountyTokens[to].add(value);
       totalGivenBountyTokens = totalGivenBountyTokens.add(value);

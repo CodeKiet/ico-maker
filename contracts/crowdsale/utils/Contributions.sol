@@ -3,6 +3,7 @@ pragma solidity ^0.4.24;
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "openzeppelin-solidity/contracts/access/rbac/RBAC.sol";
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
+import "eth-token-recover/contracts/TokenRecover.sol";
 
 
 /**
@@ -10,7 +11,7 @@ import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
  * @author Vittorio Minacori (https://github.com/vittominacori)
  * @dev Utility contract where to save any information about Crowdsale contributions
  */
-contract Contributions is RBAC, Ownable {
+contract Contributions is RBAC, TokenRecover {
 
   using SafeMath for uint256;
 
@@ -31,9 +32,9 @@ contract Contributions is RBAC, Ownable {
 
   /**
    * @dev add contribution into the contributions array
-   * @param _address address
-   * @param _weiAmount uint256
-   * @param _tokenAmount uint256
+   * @param _address Address being contributing
+   * @param _weiAmount Amount of wei contributed
+   * @param _tokenAmount Amount of token received
    */
   function addBalance(
     address _address,

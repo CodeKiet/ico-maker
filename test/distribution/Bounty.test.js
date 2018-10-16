@@ -9,17 +9,18 @@ require('chai')
   .use(require('chai-bignumber')(BigNumber))
   .should();
 
-const CappedBountyMinter = artifacts.require('CappedBountyMinter');
+const Bounty = artifacts.require('Bounty');
 const BaseToken = artifacts.require('BaseToken');
 
 const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
 
-contract('CappedBountyMinter', function (
+contract('Bounty', function (
   [tokenOwner, bountyOwner, anotherAccount, receiver1, receiver2, receiver3, thirdParty]
 ) {
   const _name = 'BaseToken';
   const _symbol = 'ERC20';
   const _decimals = 18;
+  const _cap = new BigNumber(10000);
 
   const cap = new BigNumber(20000);
 
@@ -31,9 +32,8 @@ contract('CappedBountyMinter', function (
   ];
 
   beforeEach(async function () {
-    this.token = await BaseToken.new(_name, _symbol, _decimals, { from: tokenOwner });
-    this.decimals = await this.token.decimals();
-    this.bounty = await CappedBountyMinter.new(this.token.address, cap, { from: bountyOwner });
+    this.token = await BaseToken.new(_name, _symbol, _decimals, _cap, { from: tokenOwner });
+    this.bounty = await Bounty.new(this.token.address, cap, { from: bountyOwner });
     await this.token.addMinter(this.bounty.address, { from: tokenOwner });
   });
 
@@ -45,16 +45,14 @@ contract('CappedBountyMinter', function (
       });
       it('has a valid cap', async function () {
         const bountyCap = await this.bounty.cap();
-        bountyCap.should.be.bignumber.equal(
-          cap.mul(Math.pow(10, this.decimals))
-        );
+        bountyCap.should.be.bignumber.equal(cap);
       });
     });
 
     describe('if token address is the zero address', function () {
       it('reverts', async function () {
         await assertRevert(
-          CappedBountyMinter.new(ZERO_ADDRESS, cap, { from: bountyOwner })
+          Bounty.new(ZERO_ADDRESS, cap, { from: bountyOwner })
         );
       });
     });
@@ -62,7 +60,7 @@ contract('CappedBountyMinter', function (
     describe('if cap is zero', function () {
       it('reverts', async function () {
         await assertRevert(
-          CappedBountyMinter.new(this.token.address, 0, { from: bountyOwner })
+          Bounty.new(this.token.address, 0, { from: bountyOwner })
         );
       });
     });
@@ -81,7 +79,7 @@ contract('CappedBountyMinter', function (
         for (const arrayIndex in addresses) {
           const receiverBalance = await this.token.balanceOf(addresses[arrayIndex]);
 
-          const expectedTokens = amounts[arrayIndex].mul(Math.pow(10, this.decimals));
+          const expectedTokens = amounts[arrayIndex];
           receiverBalance.should.be.bignumber.equal(expectedTokens);
         }
       });
@@ -97,7 +95,7 @@ contract('CappedBountyMinter', function (
         for (const arrayIndex in addresses) {
           const givenBountyTokens = await this.bounty.givenBountyTokens(addresses[arrayIndex]);
 
-          const expectedTokens = amounts[arrayIndex].mul(Math.pow(10, this.decimals));
+          const expectedTokens = amounts[arrayIndex];
           givenBountyTokens.should.be.bignumber.equal(expectedTokens);
         }
       });
@@ -108,7 +106,7 @@ contract('CappedBountyMinter', function (
         await this.bounty.multiSend(addresses, amounts, { from: bountyOwner });
 
         for (const arrayIndex in amounts) {
-          totalGivenTokens = totalGivenTokens.plus(amounts[arrayIndex].mul(Math.pow(10, this.decimals)));
+          totalGivenTokens = totalGivenTokens.plus(amounts[arrayIndex]);
         }
         const totalGivenBountyTokens = await this.bounty.totalGivenBountyTokens();
         totalGivenBountyTokens.should.be.bignumber.equal(totalGivenTokens);
@@ -120,11 +118,11 @@ contract('CappedBountyMinter', function (
         await this.bounty.multiSend(addresses, amounts, { from: bountyOwner });
 
         for (const arrayIndex in amounts) {
-          totalGivenTokens = totalGivenTokens.plus(amounts[arrayIndex].mul(Math.pow(10, this.decimals)));
+          totalGivenTokens = totalGivenTokens.plus(amounts[arrayIndex]);
         }
         const remainingTokens = await this.bounty.remainingTokens();
         remainingTokens.should.be.bignumber.equal(
-          cap.mul(Math.pow(10, this.decimals)).sub(totalGivenTokens)
+          cap.sub(totalGivenTokens)
         );
       });
 
@@ -141,7 +139,7 @@ contract('CappedBountyMinter', function (
           for (const arrayIndex in addresses) {
             const receiverBalance = await this.token.balanceOf(addresses[arrayIndex]);
 
-            const expectedTokens = amounts[arrayIndex].mul(Math.pow(10, this.decimals));
+            const expectedTokens = amounts[arrayIndex];
             receiverBalance.should.be.bignumber.equal(expectedTokens.mul(2));
           }
         });
@@ -158,7 +156,7 @@ contract('CappedBountyMinter', function (
           for (const arrayIndex in addresses) {
             const givenBountyTokens = await this.bounty.givenBountyTokens(addresses[arrayIndex]);
 
-            const expectedTokens = amounts[arrayIndex].mul(Math.pow(10, this.decimals));
+            const expectedTokens = amounts[arrayIndex];
             givenBountyTokens.should.be.bignumber.equal(expectedTokens.mul(2));
           }
         });
@@ -170,7 +168,7 @@ contract('CappedBountyMinter', function (
           await this.bounty.multiSend(addresses, amounts, { from: bountyOwner });
 
           for (const arrayIndex in amounts) {
-            totalGivenTokens = totalGivenTokens.plus(amounts[arrayIndex].mul(Math.pow(10, this.decimals)));
+            totalGivenTokens = totalGivenTokens.plus(amounts[arrayIndex]);
           }
           const totalGivenBountyTokens = await this.bounty.totalGivenBountyTokens();
           totalGivenBountyTokens.should.be.bignumber.equal(totalGivenTokens.mul(2));
